@@ -41,7 +41,7 @@ class _StudentPageState extends State<StudentHome> {
       key: _scaffoldKey, // Assign key to Scaffold
       appBar: AppBar(
         title: Text(
-          'ENkwan dena metah, $firstName !', // Use retrieved student name
+          'Welcome, $firstName !', // Use retrieved student name
           style: const TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
