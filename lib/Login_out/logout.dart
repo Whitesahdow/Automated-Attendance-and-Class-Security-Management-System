@@ -36,11 +36,12 @@ class LogoutPage extends StatelessWidget {
                         .clear(); // Clear all stored data in Shared Preferences
                     // ignore: avoid_print
                     print('Logging out...');
-                    Navigator.pushReplacement(
-                      // ignore: use_build_context_synchronously
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const Frontpage()),
+                      ModalRoute.withName(
+                          '/'), // Remove all routes below i.e it will not have any pages below
                     );
                   },
                   child: const Text(

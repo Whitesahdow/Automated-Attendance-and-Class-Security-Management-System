@@ -60,12 +60,14 @@ class CourseDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Course Details:',
-              style: TextStyle(
-                  fontFamily: 'Sedan',
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+            const Center(
+              child: Text(
+                'Course Details',
+                style: TextStyle(
+                    fontFamily: 'Sedan',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 10.0),
             Text(

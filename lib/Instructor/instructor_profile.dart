@@ -1,91 +1,82 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:AAMCS_App/Student/user_info.dart';
 
-class InstructorProfile extends StatelessWidget {
-  final String firstName;
-  final String lastName;
-  final String middleName; // Optional middle name
-  final String gender;
-  final String instructorId;
-  final String email;
-  final String phoneNumber;
-  final String department;
-  final String qualification;
+class InstructorProfile extends StatefulWidget {
+  const InstructorProfile(
+      {Key? key,
+      required String first_name,
+      required String last_name,
+      required String email,
+      required String id})
+      : super(key: key);
+  @override
+  _StudentProfileState createState() => _StudentProfileState();
+}
 
-  const InstructorProfile({
-    super.key,
-    required this.firstName,
-    required this.lastName,
-    required this.middleName,
-    required this.gender,
-    required this.instructorId,
-    required this.email,
-    required this.phoneNumber,
-    required this.department,
-    required this.qualification,
-  });
+class _StudentProfileState extends State<InstructorProfile> {
+  late Future<user_info> _dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = getdata();
+  }
+
+  Future<user_info> getdata() async {
+    final response = await http.get(Uri.parse("https://reqres.in/api/users/2"));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      final user = user_info(
+        first_name: data['first_name'],
+        last_name: data['last_name'],
+        email: data['email'],
+        id: data['id'].toString(),
+      );
+      return user;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Profile',
-              style: TextStyle(
-                  fontFamily: 'Sedan',
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold)), // Centered title
-          backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            fontFamily: 'Sedan',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        body: Center(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // const SizedBox(height: 20.0),
-
-            Text("Name: $firstName $middleName $lastName",
-                style: const TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal)),
-            const SizedBox(height: 4.0),
-            Text('Gender: $gender',
-                style: const TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal)),
-            const SizedBox(height: 4.0),
-            Text('Student ID: $instructorId',
-                style: const TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal)),
-            const SizedBox(height: 4.0),
-            Text('Email: $email',
-                style: const TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal)),
-            const SizedBox(height: 4.0),
-            Text('Phone Number: $phoneNumber',
-                style: const TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal)),
-            const SizedBox(height: 4.0),
-            const SizedBox(height: 4.0),
-            Text('Department: $department',
-                style: const TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal)),
-            const SizedBox(height: 4.0),
-            Text('Batch Section: $qualification',
-            style: const TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal)),
-            
-          ],
-        )));
+        backgroundColor: const Color.fromARGB(255, 170, 163, 163),
+      ),
+      body: FutureBuilder<user_info>(
+        future: _dataFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: Cant find anything'));
+          } else {
+            final user = snapshot.data!;
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Name: ${user.first_name} ${user.last_name}'),
+                  Text('Email: ${user.email}'),
+                  Text('id: ${user.id} '),
+                ],
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 }
