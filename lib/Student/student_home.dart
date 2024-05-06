@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:AAMCS_App/Student/Drawer_menu.dart';
+import 'package:AAMCS_App/Student/stu_Drawer/Drawer_menu.dart';
+
 import 'package:AAMCS_App/Student/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -57,72 +58,83 @@ class _StudentPageState extends State<StudentHome> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        // backgroundColor: Color.fromARGB(255, 174, 138, 47),
+        backgroundColor: Color.fromARGB(255, 17, 40, 77),
+        elevation: 3,
+        shadowColor: const Color.fromARGB(255, 20, 19, 18),
         title: const Text(
-          'Home Page',
+          'Student Home Page',
           style: TextStyle(
             fontSize: 22.0,
             fontWeight: FontWeight.bold,
             fontFamily: 'sedan',
+            color: Color.fromARGB(255, 255, 255, 255),
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: const Icon(
+            Icons.menu,
+            color: Color.fromARGB(255, 255, 252, 252),
+          ),
           onPressed: () => _scaffoldKey.currentState!.openDrawer(),
         ),
       ),
-      body: FutureBuilder<user_info>(
-        future: _userDataFuture,
-        builder: (context, snapshot) {
-          return Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  CircularProgressIndicator(),
-                if (snapshot.hasData)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Welcome, ${snapshot.data!.first_name} ${snapshot.data!.last_name}!',
-                        style: const TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'sedan',
+      body: Container(
+        color: Color.fromARGB(205, 198, 200, 202),
+        child: FutureBuilder<user_info>(
+          future: _userDataFuture,
+          builder: (context, snapshot) {
+            return Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    CircularProgressIndicator(),
+                  if (snapshot.hasData)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Welcome, ${snapshot.data!.first_name} ${snapshot.data!.last_name}!',
+                          style: const TextStyle(
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'sedan',
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Email: ${snapshot.data!.email}',
-                        style: const TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(height: 20),
+                        Text(
+                          'Email: ${snapshot.data!.email}',
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                SizedBox(height: 20),
-                Container(
-                  margin: const EdgeInsets.all(16.0),
-                  child: TableCalendar(
-                    rowHeight: 40,
-                    calendarFormat: CalendarFormat.month,
-                    headerStyle: const HeaderStyle(
-                      formatButtonVisible: false,
-                      titleCentered: true,
+                      ],
                     ),
-                    availableGestures: AvailableGestures.all,
-                    selectedDayPredicate: (day) => isSameDay(day, today),
-                    focusedDay: today,
-                    firstDay: DateTime.utc(2019, 2, 1),
-                    lastDay: DateTime.utc(2024, 11, 1),
-                    onDaySelected: _onDaySelected,
+                  SizedBox(height: 20),
+                  Container(
+                    margin: const EdgeInsets.all(16.0),
+                    child: TableCalendar(
+                      rowHeight: 40,
+                      calendarFormat: CalendarFormat.month,
+                      headerStyle: const HeaderStyle(
+                        formatButtonVisible: false,
+                        titleCentered: true,
+                      ),
+                      availableGestures: AvailableGestures.all,
+                      selectedDayPredicate: (day) => isSameDay(day, today),
+                      focusedDay: today,
+                      firstDay: DateTime.utc(2019, 2, 1),
+                      lastDay: DateTime.utc(2024, 11, 1),
+                      onDaySelected: _onDaySelected,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
       drawer: const DrawerWidget(),
     );
