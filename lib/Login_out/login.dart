@@ -47,10 +47,10 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   OutlinedButton(
                     onPressed: () {
-                      Navigator.push(
+                      /* Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const InstructorHome()));
+                              builder: (context) => const InstructorHome()));*/
                       setState(() {
                         userType = 'teacher';
                       });
@@ -69,10 +69,6 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(width: 20.0), // Add space between buttons
                   OutlinedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const StudentHome()));
                       setState(() {
                         userType = 'student';
                       });
@@ -101,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                   labelStyle: const TextStyle(
                     fontSize: 15,
                     fontFamily: 'sedan',
-                    fontWeight: FontWeight.bold,
+                    //   fontWeight: FontWeight.bold,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(
@@ -119,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                   labelStyle: const TextStyle(
                     fontSize: 15,
                     fontFamily: 'sedan',
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(
@@ -135,7 +131,14 @@ class _LoginPageState extends State<LoginPage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const StudentHome()));
+                          builder: (context) => userType == 'teacher'
+                              ? InstructorHome()
+                              : StudentHome(
+                                  first_name: 'sdsd',
+                                  last_name: 'ss',
+                                  email: 'sdsd',
+                                  id: 'null',
+                                )));
                 },
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(

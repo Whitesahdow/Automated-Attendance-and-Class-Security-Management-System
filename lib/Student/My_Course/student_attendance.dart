@@ -57,9 +57,9 @@ class _AttendanceListState extends State<AttendanceList> {
           style: TextStyle(
               fontSize: 22, fontWeight: FontWeight.bold, fontFamily: 'sedan'),
         ),
-        backgroundColor: const Color.fromARGB(255, 181, 175, 175),
+        //backgroundColor: const Color.fromARGB(255, 181, 175, 175),
       ),
-      backgroundColor: const Color.fromARGB(255, 181, 175, 175),
+      //backgroundColor: const Color.fromARGB(255, 181, 175, 175),
       body: ListView.builder(
         itemCount: attendanceRecords.length,
         itemBuilder: (context, index) {
@@ -72,8 +72,8 @@ class _AttendanceListState extends State<AttendanceList> {
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: attendanceRecord.status == AttendanceStatus.present
-                          ? const Color.fromARGB(175, 100, 180, 100)
-                          : const Color.fromARGB(175, 180, 100, 100),
+                          ? Color.fromARGB(98, 7, 223, 54)
+                          : Color.fromARGB(139, 208, 43, 60),
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                     child: Column(

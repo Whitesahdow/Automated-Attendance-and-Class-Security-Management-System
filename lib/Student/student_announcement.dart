@@ -13,7 +13,7 @@ class Announcement extends StatelessWidget {
     required this.isCancelled,
     this.announcement,
   });
-
+// like the video i saw django and flutter this page should be api request refresh yemidereg update yemigegnibet
   @override
   Widget build(BuildContext context) {
     return Scaffold(
