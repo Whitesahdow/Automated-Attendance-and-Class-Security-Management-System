@@ -1,12 +1,13 @@
 import 'dart:convert';
-import 'package:AAMCS_App/Instructor/My_Course/instructor_course.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instructor_course.dart';
+import 'package:AAMCS_App/Student/user_info.dart';
 import 'package:flutter/material.dart';
-import 'package:AAMCS_App/Instructor/instructor_profile.dart';
-import 'package:AAMCS_App/Instructor/session.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/instructor_profile.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/session.dart';
 // import 'package:AAMCS_App/Student/My_Course/student_course.dart';
 import 'package:AAMCS_App/Login_out/logout.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:AAMCS_App/Student/user_info.dart';
+
 import 'package:http/http.dart' as http;
 
 class InstructorHome extends StatefulWidget {
