@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instructor_course.dart';
-import 'package:AAMCS_App/Student/user_info.dart';
+import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/instructor_profile.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/session.dart';

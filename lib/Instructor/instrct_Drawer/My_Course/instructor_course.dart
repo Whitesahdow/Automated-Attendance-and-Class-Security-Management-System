@@ -9,7 +9,6 @@ class Instructor_course extends StatelessWidget {
 
   // static const String apiKey = '17eaead0-359f-46e2-860f-91ca579d7db5';
 
-  // get teams
   Future<List<Instructor_Courses>> getCourse() async {
     var url = Uri.https('reqres.in', '/api/unknown');
     // final response = await http.get(Uri.parse("api.balldontlie.io"));

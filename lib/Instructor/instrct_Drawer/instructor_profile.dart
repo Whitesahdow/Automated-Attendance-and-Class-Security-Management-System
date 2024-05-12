@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:AAMCS_App/Student/user_info.dart';
+import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 

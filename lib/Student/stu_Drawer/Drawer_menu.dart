@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:AAMCS_App/Student/student_announcement.dart';
-import 'package:AAMCS_App/Student/user_info.dart';
+import 'package:AAMCS_App/Student/stu_Drawer/student_announcement.dart';
+import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/Login_out/logout.dart';

@@ -1,3 +1,4 @@
+import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/Instructor/instructor_home.dart';
 import 'package:AAMCS_App/Student/student_home.dart';
@@ -20,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  AuthController auth_controller = AuthController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,8 +92,9 @@ class _LoginPageState extends State<LoginPage> {
                   height: 20.0), // Add space between buttons and email field
               // Email text field
               TextField(
-                keyboardType:
-                    TextInputType.emailAddress, // Set keyboard type for email
+                keyboardType: TextInputType.emailAddress,
+                controller: auth_controller
+                    .username_controller, // Set keyboard type for email
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: const TextStyle(
@@ -109,7 +112,8 @@ class _LoginPageState extends State<LoginPage> {
                   height: 20.0), // Add space between email and password fields
               // Password text field
               TextField(
-                obscureText: true, // Hide password characters
+                //obscureText: true, // Hide password characters
+                controller: auth_controller.password_controller,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: const TextStyle(
@@ -128,17 +132,14 @@ class _LoginPageState extends State<LoginPage> {
               // Login button
               ElevatedButton(
                 onPressed: () {
+                  auth_controller.loginuser();
+
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => userType == 'teacher'
                               ? InstructorHome()
-                              : StudentHome(
-                                  first_name: 'sdsd',
-                                  last_name: 'ss',
-                                  email: 'sdsd',
-                                  id: 'null',
-                                )));
+                              : StudentHome()));
                 },
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(
