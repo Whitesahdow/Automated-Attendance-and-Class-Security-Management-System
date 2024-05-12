@@ -1,8 +1,10 @@
+import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/booked_session.dart';
 import 'package:flutter/material.dart';
-import 'package:AAMCS_App/Instructor/booked_session.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Session extends StatefulWidget {
-  const Session({super.key});
+  const Session({Key? key}) : super(key: key);
 
   @override
   State<Session> createState() => _SessionState();
@@ -24,34 +26,56 @@ class SessionData {
   });
 }
 
-class _SessionState extends State<Session> {
-  static const List<String> _courseNames = [
-    'Course 1',
-    'Course 2',
-    'Course 3'
-  ]; // this should come from api requests
-  static const List<String> _roomNumbers = [
-    'Room A101',
-    'Room B202',
-    'Room C303'
-  ]; // this should come from api requests
-  static const List<String> _sections = [
-    'Section A',
-    'Section B',
-    'Section C'
-  ]; // this should come from api requests
-  static const List<String> _batches = [
-    '2023-2024',
-    '2024-2025'
-  ]; // this should come from api requests
+SessionData sessionData = SessionData();
 
+class Crs_Lists {
+  final String name;
+  final String pantone_value;
+
+  Crs_Lists({
+    required this.name,
+    required this.pantone_value,
+  });
+}
+
+class _SessionState extends State<Session> {
+  List<Crs_Lists> course_list = [];
   String? _selectedCourseName;
   String? _selectedRoomNumber;
   String? _selectedSection;
   String? _selectedBatch;
   final _announcementController = TextEditingController();
 
-  SessionData sessionData = SessionData();
+  @override
+  void initState() {
+    super.initState();
+    _fetchCourseList();
+  }
+
+  Future<void> _fetchCourseList() async {
+    try {
+      var url = Uri.https('reqres.in', '/api/unknown');
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+
+        setState(() {
+          course_list = (jsonData['data'] as List)
+              .map((course) => Crs_Lists(
+                    name: course['name'],
+                    pantone_value: course['pantone_value'],
+                  ))
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load courses');
+      }
+    } catch (e) {
+      print('Error: $e');
+      // Handle error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +96,10 @@ class _SessionState extends State<Session> {
           children: [
             DropdownButtonFormField<String>(
               value: _selectedCourseName,
-              items: _courseNames
-                  .map((courseName) => DropdownMenuItem<String>(
-                        value: courseName,
-                        child: Text(courseName),
+              items: course_list
+                  .map((course) => DropdownMenuItem<String>(
+                        value: course.name,
+                        child: Text(course.name),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -96,13 +120,14 @@ class _SessionState extends State<Session> {
                 ),
               ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 30),
+            //c#########################################################################################################
             DropdownButtonFormField<String>(
               value: _selectedRoomNumber,
-              items: _roomNumbers
-                  .map((roomNumber) => DropdownMenuItem<String>(
-                        value: roomNumber,
-                        child: Text(roomNumber),
+              items: course_list
+                  .map((course) => DropdownMenuItem<String>(
+                        value: course.name,
+                        child: Text(course.name),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -123,13 +148,14 @@ class _SessionState extends State<Session> {
                 ),
               ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 30),
+            //#############################################################################################3
             DropdownButtonFormField<String>(
               value: _selectedSection,
-              items: _sections
-                  .map((section) => DropdownMenuItem<String>(
-                        value: section,
-                        child: Text(section),
+              items: course_list
+                  .map((course) => DropdownMenuItem<String>(
+                        value: course.name,
+                        child: Text(course.name),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -150,13 +176,14 @@ class _SessionState extends State<Session> {
                 ),
               ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 30),
+            //#################################################################
             DropdownButtonFormField<String>(
               value: _selectedBatch,
-              items: _batches
-                  .map((batch) => DropdownMenuItem<String>(
-                        value: batch,
-                        child: Text(batch),
+              items: course_list
+                  .map((course) => DropdownMenuItem<String>(
+                        value: course.name,
+                        child: Text(course.name),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -166,7 +193,7 @@ class _SessionState extends State<Session> {
                 });
               },
               decoration: const InputDecoration(
-                labelText: 'Batch/Year',
+                labelText: 'Batch',
                 labelStyle: TextStyle(
                   fontFamily: 'Sedan',
                   fontSize: 16,
@@ -177,10 +204,10 @@ class _SessionState extends State<Session> {
                 ),
               ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 30),
+            //####################################################################################
             TextField(
               controller: _announcementController,
-              maxLines: null,
               onChanged: (value) {
                 sessionData.announcement = value;
               },
@@ -196,7 +223,8 @@ class _SessionState extends State<Session> {
                 ),
               ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 30),
+            //####################################################################################
             ElevatedButton(
               onPressed: () {
                 _showConfirmationDialog(context);
@@ -247,22 +275,15 @@ class _SessionState extends State<Session> {
             onPressed: () {
               Navigator.pop(context);
               Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BookedSessionPage(
-                    courseName: sessionData.courseName.toString(),
-                    roomNumber: sessionData.roomNumber.toString(),
-                    section: sessionData.section.toString(),
-                    batch: sessionData.batch.toString(),
-                    announcement: sessionData.announcement.toString(),
-                  ),
-                ),
-              );
-              _announcementController.text.trim();
-              print(sessionData.courseName);
-              print(sessionData.roomNumber);
-              print(sessionData.section);
-              print(sessionData.batch);
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BookedSessionPage(
+                            courseName: sessionData.courseName.toString(),
+                            roomNumber: sessionData.roomNumber.toString(),
+                            section: sessionData.section.toString(),
+                            batch: sessionData.batch.toString(),
+                            announcement: sessionData.announcement.toString(),
+                          )));
             },
             child: const Text('Submit'),
           ),

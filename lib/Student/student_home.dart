@@ -1,20 +1,11 @@
 import 'dart:convert';
 import 'package:AAMCS_App/Student/stu_Drawer/Drawer_menu.dart';
-
-import 'package:AAMCS_App/Student/user_info.dart';
+import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 
 class StudentHome extends StatefulWidget {
-  const StudentHome(
-      {Key? key,
-      required first_name,
-      required last_name,
-      required email,
-      required id})
-      : super(key: key);
-
   @override
   State<StudentHome> createState() => _StudentPageState();
 }
@@ -58,7 +49,7 @@ class _StudentPageState extends State<StudentHome> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        // backgroundColor: Color.fromARGB(255, 174, 138, 47),
+        // backgroundColor: Color.fromARGB(255, 174, 138, 47), AASTU brand colors
         backgroundColor: Color.fromARGB(255, 17, 40, 77),
         elevation: 3,
         shadowColor: const Color.fromARGB(255, 20, 19, 18),

@@ -1,60 +1,75 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/Login_out/login.dart';
+import 'package:flutter/widgets.dart';
 
 class Frontpage extends StatelessWidget {
-  const Frontpage({super.key});
+  const Frontpage({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: null,
-        backgroundColor: Colors.white,
-        body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Center(
-                child: Text(
+      appBar: null,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        minimum: EdgeInsets.only(top: 160.0), // Set only top padding
+        maintainBottomViewPadding: true,
+        child: Column(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Center(
+                  child: Text(
                     " Automated Attendance Management \n          and Class Security System",
                     style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontStyle: FontStyle.normal,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Sedan')),
-              ),
-              Center(
-                child: Image.asset("assets/images/AASTU_logo1.png"),
-              ),
-              const Positioned(
-                bottom: 240,
-                child: Text(
-                  "    This App Is Designed For 5th Year Final Project.\n                                       trial phase",
-                  style: TextStyle(
                       color: Colors.black,
-                      fontSize: 17,
-                      fontWeight: FontWeight.normal,
-                      fontFamily: 'Lobster'),
+                      fontSize: 20,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Sedan',
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Image.asset("assets/images/AASTU_logo1.png"),
+                ),
+              ],
+            ),
+            Center(
+              child: Text(
+                "    This App Is Designed For 5th Year Final Project.\n                                       trial phase",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 17,
+                  fontWeight: FontWeight.normal,
+                  fontFamily: 'Lobster',
                 ),
               ),
-              Positioned(
-                bottom: 80,
-                left: 150,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
-                        ));
-                  },
-                  child: const Text(
-                    'Next',
-                    style:
-                        TextStyle(color: Colors.black, fontFamily: 'Lobster'),
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Next',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Lobster',
                   ),
                 ),
               ),
-            ]));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
