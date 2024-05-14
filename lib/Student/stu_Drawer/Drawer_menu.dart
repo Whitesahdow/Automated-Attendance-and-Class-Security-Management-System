@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/student_announcement.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 
@@ -11,7 +12,7 @@ import 'package:AAMCS_App/Student/My_Course/student_course.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/student_profile.dart';
 
 class DrawerWidget extends StatefulWidget {
-  const DrawerWidget({Key? key}) : super(key: key);
+  const DrawerWidget({super.key});
 
   @override
   _DrawerWidgetState createState() => _DrawerWidgetState();
@@ -20,6 +21,7 @@ class DrawerWidget extends StatefulWidget {
 class _DrawerWidgetState extends State<DrawerWidget> {
   late Future<user_info> _userDataFuture;
 
+  AuthController auth_controller = AuthController();
   @override
   void initState() {
     super.initState();
@@ -27,18 +29,25 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 
   Future<user_info> getdata() async {
-    final response = await http.get(Uri.parse("https://reqres.in/api/users/2"));
+    final response = await http
+        .get(Uri.parse("https://besufikadyilma.tech/student/me"), headers: {
+      "Content-Type": "application/json",
+      "Authorization":
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxNTY0NjgzMiwianRpIjoiODFjY2JlYzItYjQyZS00ZGI4LWFlNGMtYjNjOGEwYzVkYjM1IiwidHlwZSI6InN0dWRlbnQiLCJzdWIiOiJmY2UyY2MzNS00NmNkLTQ5NTUtYTZlZi03NjI2ZmRmZTY2OTMiLCJuYmYiOjE3MTU2NDY4MzIsImNzcmYiOiIyZGZmZTQ2Ni0yZGIzLTRjNGMtOTI3NC0wZDgxNTA5MjExZDciLCJleHAiOjE3MTU2NTA0MzJ9.9SSotDGHn6L9zdKBU4ev9k2QH4MNLJa7T5P8E5VRXX4",
+    });
+
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['data'];
+      final data = jsonDecode(response.body);
       final user = user_info(
         first_name: data['first_name'],
         last_name: data['last_name'],
         email: data['email'],
-        id: data['id'].toString(),
+        id: data['student_id'].toString(),
       );
+      print(user.first_name);
       return user;
     } else {
-      throw Exception('Failed to load user data');
+      throw Exception('Failed to load data');
     }
   }
 
@@ -156,7 +165,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Announcement(
+                      builder: (context) => const Announcement(
                         courseName: "course name goes here",
                         roomNumber: "roomNumber goes here",
                         isCancelled: true,

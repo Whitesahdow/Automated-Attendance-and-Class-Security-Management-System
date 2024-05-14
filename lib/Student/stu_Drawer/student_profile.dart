@@ -5,12 +5,11 @@ import 'package:http/http.dart' as http;
 
 class StudentProfile extends StatefulWidget {
   const StudentProfile(
-      {Key? key,
+      {super.key,
       required String first_name,
       required String last_name,
       required String email,
-      required String id})
-      : super(key: key);
+      required String id});
   @override
   _StudentProfileState createState() => _StudentProfileState();
 }
@@ -59,9 +58,9 @@ class _StudentProfileState extends State<StudentProfile> {
         future: _dataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: Cant find anything'));
+            return const Center(child: Text('Error: Cant find anything'));
           } else {
             final user = snapshot.data!;
             return Center(

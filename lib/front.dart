@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/Login_out/login.dart';
-import 'package:flutter/widgets.dart';
 
 class Frontpage extends StatelessWidget {
-  const Frontpage({Key? key});
+  const Frontpage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class Frontpage extends StatelessWidget {
       appBar: null,
       backgroundColor: Colors.white,
       body: SafeArea(
-        minimum: EdgeInsets.only(top: 160.0), // Set only top padding
+        minimum: const EdgeInsets.only(top: 160.0), // Set only top padding
         maintainBottomViewPadding: true,
         child: Column(
           children: [
@@ -37,7 +37,7 @@ class Frontpage extends StatelessWidget {
                 ),
               ],
             ),
-            Center(
+            const Center(
               child: Text(
                 "    This App Is Designed For 5th Year Final Project.\n                                       trial phase",
                 style: TextStyle(

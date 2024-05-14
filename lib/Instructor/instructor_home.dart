@@ -70,9 +70,9 @@ class _StudentPageState extends State<InstructorHome> {
     return Scaffold(
       key: _scaffoldKey, // Assign key to Scaffold
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Instructor Home Page ', // Use retrieved student name
-          style: const TextStyle(
+          style: TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
               fontFamily: 'sedan'), // Adjust title font size
@@ -91,7 +91,7 @@ class _StudentPageState extends State<InstructorHome> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (snapshot.connectionState == ConnectionState.waiting)
-                    CircularProgressIndicator(),
+                    const CircularProgressIndicator(),
                   if (snapshot.hasData)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -104,7 +104,7 @@ class _StudentPageState extends State<InstructorHome> {
                             fontFamily: 'sedan',
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Text(
                           'Email: ${snapshot.data!.email}',
                           style: const TextStyle(
@@ -114,7 +114,7 @@ class _StudentPageState extends State<InstructorHome> {
                         ),
                       ],
                     ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Container(
                     margin: const EdgeInsets.all(16.0),
                     child: TableCalendar(
@@ -168,7 +168,7 @@ class _StudentPageState extends State<InstructorHome> {
                               fontWeight: FontWeight.bold,
                             ),
                           )
-                        : CircularProgressIndicator(),
+                        : const CircularProgressIndicator(),
                 accountEmail: snapshot.hasData
                     ? Text(
                         snapshot.data!.email,
@@ -189,7 +189,7 @@ class _StudentPageState extends State<InstructorHome> {
                               fontStyle: FontStyle.italic,
                             ),
                           )
-                        : CircularProgressIndicator(),
+                        : const CircularProgressIndicator(),
                 currentAccountPicture: CircleAvatar(
                   child: ClipOval(
                     child: Image.asset(

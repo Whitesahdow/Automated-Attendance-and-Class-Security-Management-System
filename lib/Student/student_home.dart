@@ -5,7 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
+
 class StudentHome extends StatefulWidget {
+  final String? My_Token;
+
+  const StudentHome(this.My_Token, {super.key});
+
   @override
   State<StudentHome> createState() => _StudentPageState();
 }
@@ -24,20 +30,32 @@ class _StudentPageState extends State<StudentHome> {
   @override
   void initState() {
     super.initState();
+    print(
+        'My_Token received in StudentHome: ${auth_controller.loginArr.toString()}');
+
     _userDataFuture = getdata();
   }
 
+  AuthController auth_controller = AuthController();
   Future<user_info> getdata() async {
-    final response = await http.get(Uri.parse("https://reqres.in/api/users/2"));
+    print(auth_controller.loginArr.toString());
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/student/me"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${auth_controller.loginArr.toString()}"
+      },
+    );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['data'];
+      final data = jsonDecode(response.body);
       final user = user_info(
         first_name: data['first_name'],
         last_name: data['last_name'],
         email: data['email'],
-        id: data['id'].toString(),
+        id: data['student_id'].toString(),
       );
+      print(data);
       return user;
     } else {
       throw Exception('Failed to load data');
@@ -50,7 +68,7 @@ class _StudentPageState extends State<StudentHome> {
       key: _scaffoldKey,
       appBar: AppBar(
         // backgroundColor: Color.fromARGB(255, 174, 138, 47), AASTU brand colors
-        backgroundColor: Color.fromARGB(255, 17, 40, 77),
+        backgroundColor: const Color.fromARGB(255, 17, 40, 77),
         elevation: 3,
         shadowColor: const Color.fromARGB(255, 20, 19, 18),
         title: const Text(
@@ -63,15 +81,17 @@ class _StudentPageState extends State<StudentHome> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
-            Icons.menu,
-            color: Color.fromARGB(255, 255, 252, 252),
-          ),
-          onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-        ),
+            icon: const Icon(
+              Icons.menu,
+              color: Color.fromARGB(255, 255, 252, 252),
+            ),
+            onPressed: () {
+              _scaffoldKey.currentState!.openDrawer();
+              //print();
+            }),
       ),
       body: Container(
-        color: Color.fromARGB(205, 198, 200, 202),
+        color: const Color.fromARGB(205, 198, 200, 202),
         child: FutureBuilder<user_info>(
           future: _userDataFuture,
           builder: (context, snapshot) {
@@ -80,7 +100,7 @@ class _StudentPageState extends State<StudentHome> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   if (snapshot.connectionState == ConnectionState.waiting)
-                    CircularProgressIndicator(),
+                    const CircularProgressIndicator(),
                   if (snapshot.hasData)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -93,7 +113,7 @@ class _StudentPageState extends State<StudentHome> {
                             fontFamily: 'sedan',
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Text(
                           'Email: ${snapshot.data!.email}',
                           style: const TextStyle(
@@ -103,7 +123,7 @@ class _StudentPageState extends State<StudentHome> {
                         ),
                       ],
                     ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Container(
                     margin: const EdgeInsets.all(16.0),
                     child: TableCalendar(
