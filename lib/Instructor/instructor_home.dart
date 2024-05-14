@@ -18,39 +18,28 @@ class InstructorHome extends StatefulWidget {
 
 class _StudentPageState extends State<InstructorHome> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late Future<user_info> _userDataFuture;
-  // Replace with actual logic to retrieve student information (e.g., API call)
-  // String get firstName =>
-  //     "Mr. Bereketab"; // Replace with actual student's first name
-  // String get lastName => "Heyi";
-  // String get middleName => 'Belete';
-  // String get gender => 'Male';
-  // String get instructorId => 'INS0187/10';
-  // String get email => 'bereketabbelete@gmail.com';
-  // String get phoneNumber => '+251934607224';
-  // String get department => 'electrical and Computer engineering';
-  // String get qualification => 'BSC computer en';
-  // String get courseName => 'Mobile Development';
-  // String get roomNumber => 'B203';
-  // bool get isCancelled => false;
-  // get announcement => "The session will start in 10 min";
-  // get accountImage => 'assets/images/profile.png';
+  late Future<Instructor_info> _userDataFuture;
+
   @override
   void initState() {
     super.initState();
     _userDataFuture = getdata();
   }
 
-  Future<user_info> getdata() async {
+  Future<Instructor_info> getdata() async {
     final response = await http.get(Uri.parse("https://reqres.in/api/users/2"));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['data'];
-      final user = user_info(
+      final user = Instructor_info(
         first_name: data['first_name'],
+        middle_name: data['middle_name'],
         last_name: data['last_name'],
         email: data['email'],
-        id: data['id'].toString(),
+        department: data['department'],
+        gender: data['gender'],
+        qualification: data['qualification'],
+        teacher_id: data['teacher_id'].toString(),
       );
       return user;
     } else {
@@ -292,7 +281,9 @@ class _StudentPageState extends State<InstructorHome> {
                                 email: snapshot.hasData
                                     ? snapshot.data!.email
                                     : '',
-                                id: snapshot.hasData ? snapshot.data!.id : '',
+                                id: snapshot.hasData
+                                    ? snapshot.data!.teacher_id
+                                    : '',
                               )));
                   print('Profile button pressed!');
                 },

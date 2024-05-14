@@ -4,18 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class StudentProfile extends StatefulWidget {
-  const StudentProfile(
-      {super.key,
-      required String first_name,
-      required String last_name,
-      required String email,
-      required String id});
+  final String? My_Token;
+  const StudentProfile(this.My_Token, {super.key});
   @override
   _StudentProfileState createState() => _StudentProfileState();
 }
 
 class _StudentProfileState extends State<StudentProfile> {
-  late Future<user_info> _dataFuture;
+  late Future<Student_info> _dataFuture;
 
   @override
   void initState() {
@@ -23,17 +19,31 @@ class _StudentProfileState extends State<StudentProfile> {
     _dataFuture = getdata();
   }
 
-  Future<user_info> getdata() async {
-    final response = await http.get(Uri.parse("https://reqres.in/api/users/2"));
+  Future<Student_info> getdata() async {
+    // print(auth_controller.loginArr.toString());
+
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/student/me"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${widget.My_Token}"
+      },
+    );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['data'];
-      final user = user_info(
+      final data = jsonDecode(response.body);
+      final user = Student_info(
         first_name: data['first_name'],
+        middle_name: data['middle_name'],
         last_name: data['last_name'],
         email: data['email'],
-        id: data['id'].toString(),
+        department: data['department'],
+        gender: data['gender'],
+        batch: data['batch'],
+        section: data['section'],
+        id: data['student_id'].toString(),
       );
+      print(data);
       return user;
     } else {
       throw Exception('Failed to load data');
@@ -54,22 +64,28 @@ class _StudentProfileState extends State<StudentProfile> {
         ),
         backgroundColor: const Color.fromARGB(255, 170, 163, 163),
       ),
-      body: FutureBuilder<user_info>(
+      body: FutureBuilder<Student_info>(
         future: _dataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Error: Cant find anything'));
+            return const Center(
+                child:
+                    Text('Error: Cant find anything.......................'));
           } else {
             final user = snapshot.data!;
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Name: ${user.first_name} ${user.last_name}'),
+                  Text(
+                      'Name: ${user.first_name} ${user.middle_name} ${user.last_name}'),
                   Text('Email: ${user.email}'),
-                  Text('id: ${user.id} '),
+                  Text('Id: ${user.id} '),
+                  Text('Department: ${user.department}'),
+                  Text('gender: ${user.gender} '),
+                  Text('Batch section: ${user.batch} ${user.section}'),
                 ],
               ),
             );

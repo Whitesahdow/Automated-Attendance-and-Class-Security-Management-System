@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class LoginResponse {
-  final String? token;
-  final String? loginArr;
+  String? token;
+  String? loginArr;
 
   LoginResponse({this.token, this.loginArr});
 }
@@ -12,9 +12,9 @@ class LoginResponse {
 class AuthController {
   TextEditingController username_controller = TextEditingController();
   TextEditingController password_controller = TextEditingController();
-  String? bodyreturn;
-  var loginArr;
-  AuthController({this.bodyreturn, this.loginArr});
+
+  LoginResponse reuest_responese = LoginResponse();
+  // AuthController({this.bodyreturn, this.loginArr});
   Future<String?> loginuser(String usertype) async {
     if (username_controller.text.isEmpty || password_controller.text.isEmpty) {
       print("Error: Username or password is empty");
@@ -43,19 +43,22 @@ class AuthController {
 
       if (response.statusCode == 200) {
         var Login_status = jsonDecode(response.body);
-        var loginArr = response.headers["set-cookie"].toString();
-        // print(
-        //   " With out spliting...................................######################################## : $loginArr");
-        loginArr = loginArr.split("=")[1];
-        loginArr = loginArr.split(";")[0];
-        Login_status = Login_status['msg'].toString();
+        var cookie = response.headers["set-cookie"].toString();
+
         print(
-            " the Token is...................................######################################## : $Login_status");
+            " With out spliting...................................######################################## : $cookie");
+        // var split = reuest_responese.token;
+        String? splits = cookie.split("=")[1];
+        splits = splits.split(";")[0];
+        reuest_responese.loginArr = Login_status['msg'].toString();
+        // print(
+        //     " the message body  is...................................######################################## : $Login_status");
+        String token_response = splits.toString();
+        //bodyreturn = Login_status.toString();
+        print("after splitting ${token_response}");
 
-        bodyreturn = Login_status.toString();
-        print(loginArr);
-
-        return loginArr;
+        // splits = reuest_responese.token;
+        return splits;
       } else {
         print("Error : ${response.body}");
         return null;
@@ -66,6 +69,7 @@ class AuthController {
     }
   }
 }
+
 /*
 
 import 'dart:convert';

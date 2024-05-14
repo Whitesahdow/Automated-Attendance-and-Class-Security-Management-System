@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
+
 import 'package:AAMCS_App/Student/stu_Drawer/student_announcement.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 
@@ -7,44 +7,47 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/Login_out/logout.dart';
 import 'package:AAMCS_App/Student/My_Course/student_course.dart';
-//import 'package:AAMCS_App/Student/stu_Drawer/student_announcement.dart';
-//import 'package:AAMCS_App/Student/student_home.dart';
+
 import 'package:AAMCS_App/Student/stu_Drawer/student_profile.dart';
 
 class DrawerWidget extends StatefulWidget {
-  const DrawerWidget({super.key});
+  final String? My_Token;
+  const DrawerWidget(this.My_Token, {super.key});
 
   @override
   _DrawerWidgetState createState() => _DrawerWidgetState();
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
-  late Future<user_info> _userDataFuture;
+  late Future<Student_info> _userDataFuture;
 
-  AuthController auth_controller = AuthController();
   @override
   void initState() {
     super.initState();
     _userDataFuture = getdata();
   }
 
-  Future<user_info> getdata() async {
+  Future<Student_info> getdata() async {
     final response = await http
         .get(Uri.parse("https://besufikadyilma.tech/student/me"), headers: {
       "Content-Type": "application/json",
-      "Authorization":
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxNTY0NjgzMiwianRpIjoiODFjY2JlYzItYjQyZS00ZGI4LWFlNGMtYjNjOGEwYzVkYjM1IiwidHlwZSI6InN0dWRlbnQiLCJzdWIiOiJmY2UyY2MzNS00NmNkLTQ5NTUtYTZlZi03NjI2ZmRmZTY2OTMiLCJuYmYiOjE3MTU2NDY4MzIsImNzcmYiOiIyZGZmZTQ2Ni0yZGIzLTRjNGMtOTI3NC0wZDgxNTA5MjExZDciLCJleHAiOjE3MTU2NTA0MzJ9.9SSotDGHn6L9zdKBU4ev9k2QH4MNLJa7T5P8E5VRXX4",
+      "Authorization": "Bearer ${widget.My_Token}",
     });
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final user = user_info(
+      final user = Student_info(
         first_name: data['first_name'],
+        middle_name: data['middle_name'],
         last_name: data['last_name'],
         email: data['email'],
+        department: data['department'],
+        gender: data['gender'],
+        batch: data['batch'],
+        section: data,
         id: data['student_id'].toString(),
       );
-      print(user.first_name);
+      // print(user.first_name);
       return user;
     } else {
       throw Exception('Failed to load data');
@@ -56,7 +59,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return Drawer(
       child: FutureBuilder(
         future: _userDataFuture,
-        builder: (context, AsyncSnapshot<user_info> snapshot) {
+        builder: (context, AsyncSnapshot<Student_info> snapshot) {
           return ListView(
             shrinkWrap: true,
             padding: const EdgeInsets.only(),
@@ -64,7 +67,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               UserAccountsDrawerHeader(
                 accountName: snapshot.hasData
                     ? Text(
-                        '${snapshot.data!.first_name} ${snapshot.data!.last_name}',
+                        '${snapshot.data!.first_name} ${snapshot.data!.middle_name}',
                         style: const TextStyle(
                           fontFamily: 'Sedan',
                           fontSize: 16,
@@ -72,7 +75,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         ),
                       )
                     : const Text(
-                        'Error Loading Data',
+                        'Error Loading Data.........',
                         style: TextStyle(
                           fontFamily: 'Sedan',
                           fontSize: 16,
@@ -198,12 +201,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const StudentProfile(
-                        first_name: '',
-                        last_name: '',
-                        email: '',
-                        id: '',
-                      ),
+                      builder: (context) => StudentProfile(widget.My_Token),
                     ),
                   );
                   print('Profile button pressed!');

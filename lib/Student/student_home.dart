@@ -17,8 +17,9 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentPageState extends State<StudentHome> {
+  //final String? My_Token = ;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late Future<user_info> _userDataFuture;
+  late Future<Student_info> _userDataFuture;
   DateTime today = DateTime.now();
 
   void _onDaySelected(DateTime day, DateTime focusday) {
@@ -30,29 +31,37 @@ class _StudentPageState extends State<StudentHome> {
   @override
   void initState() {
     super.initState();
-    print(
-        'My_Token received in StudentHome: ${auth_controller.loginArr.toString()}');
+    // print(
+    //     'My_Token received in StudentHome: ${auth_controller.reuest_responese.token}');
+    AuthController auth_controller = AuthController();
 
     _userDataFuture = getdata();
   }
 
-  AuthController auth_controller = AuthController();
-  Future<user_info> getdata() async {
-    print(auth_controller.loginArr.toString());
+  // dynamic get beki => widget.My_Token;
+
+  Future<Student_info> getdata() async {
+    // print(auth_controller.loginArr.toString());
+
     final response = await http.get(
       Uri.parse("https://besufikadyilma.tech/student/me"),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${auth_controller.loginArr.toString()}"
+        "Authorization": "Bearer ${widget.My_Token}"
       },
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final user = user_info(
+      final user = Student_info(
         first_name: data['first_name'],
+        middle_name: data['middle_name'],
         last_name: data['last_name'],
         email: data['email'],
+        department: data['department'],
+        gender: data['gender'],
+        batch: data['batch'],
+        section: data['section'],
         id: data['student_id'].toString(),
       );
       print(data);
@@ -92,7 +101,7 @@ class _StudentPageState extends State<StudentHome> {
       ),
       body: Container(
         color: const Color.fromARGB(205, 198, 200, 202),
-        child: FutureBuilder<user_info>(
+        child: FutureBuilder<Student_info>(
           future: _userDataFuture,
           builder: (context, snapshot) {
             return Center(
@@ -147,7 +156,7 @@ class _StudentPageState extends State<StudentHome> {
           },
         ),
       ),
-      drawer: const DrawerWidget(),
+      drawer: DrawerWidget(widget.My_Token),
     );
   }
 }
