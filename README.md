@@ -1,4 +1,4 @@
-# food
+# AACSMS mobile app
 
 A new Flutter project.
 

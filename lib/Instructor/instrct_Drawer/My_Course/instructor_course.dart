@@ -7,9 +7,6 @@ import 'package:http/http.dart' as http;
 class Instructor_course extends StatelessWidget {
   List<Instructor_Courses> course_list = [];
 
-  Instructor_course({super.key});
-
-  
 
   Future<List<Instructor_Courses>> getCourse() async {
     var url = Uri.https('reqres.in', '/api/unknown');
