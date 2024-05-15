@@ -4,12 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class InstructorProfile extends StatefulWidget {
-  const InstructorProfile(
-      {super.key,
-      required String first_name,
-      required String last_name,
-      required String email,
-      required String id});
+  final String? My_Token;
+  const InstructorProfile(this.My_Token, {super.key});
   @override
   _StudentProfileState createState() => _StudentProfileState();
 }
@@ -24,10 +20,16 @@ class _StudentProfileState extends State<InstructorProfile> {
   }
 
   Future<Instructor_info> getdata() async {
-    final response = await http.get(Uri.parse("https://reqres.in/api/users/2"));
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/instructor/me"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${widget.My_Token}"
+      },
+    );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['data'];
+      final data = jsonDecode(response.body);
       final user = Instructor_info(
         first_name: data['first_name'],
         middle_name: data['middle_name'],
@@ -36,7 +38,7 @@ class _StudentProfileState extends State<InstructorProfile> {
         department: data['department'],
         gender: data['gender'],
         qualification: data['qualification'],
-        teacher_id: data['student_id'].toString(),
+        teacher_id: data['teacher_id'].toString(),
       );
       return user;
     } else {
@@ -71,9 +73,13 @@ class _StudentProfileState extends State<InstructorProfile> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Name: ${user.first_name} ${user.last_name}'),
+                  Text(
+                      'Name: ${user.first_name} ${user.middle_name} ${user.last_name}'),
                   Text('Email: ${user.email}'),
-                  Text('id: ${user.teacher_id} '),
+                  Text('Id: ${user.teacher_id} '),
+                  Text('Department: ${user.department}'),
+                  Text('gender: ${user.gender} '),
+                  Text('Qualification: ${user.qualification}'),
                 ],
               ),
             );

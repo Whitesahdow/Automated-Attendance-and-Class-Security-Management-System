@@ -1,5 +1,9 @@
 import 'dart:convert';
+import 'package:AAMCS_App/Login_out/logout.dart';
+import 'package:AAMCS_App/Student/My_Course/student_course.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/Drawer_menu.dart';
+import 'package:AAMCS_App/Student/stu_Drawer/student_announcement.dart';
+import 'package:AAMCS_App/Student/stu_Drawer/student_profile.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -115,7 +119,7 @@ class _StudentPageState extends State<StudentHome> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Welcome, ${snapshot.data!.first_name} ${snapshot.data!.last_name}!',
+                          'Welcome, ${snapshot.data!.first_name} ${snapshot.data!.middle_name}!',
                           style: const TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
@@ -156,7 +160,193 @@ class _StudentPageState extends State<StudentHome> {
           },
         ),
       ),
-      drawer: DrawerWidget(widget.My_Token),
+      drawer: _buildDrawer(),
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      child: FutureBuilder(
+        future: _userDataFuture,
+        builder: (context, AsyncSnapshot<Student_info> snapshot) {
+          return ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(),
+            children: [
+              UserAccountsDrawerHeader(
+                accountName: snapshot.hasData
+                    ? Text(
+                        '${snapshot.data!.first_name} ${snapshot.data!.middle_name}',
+                        style: const TextStyle(
+                          fontFamily: 'Sedan',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : const Text(
+                        'Error Loading Data.........',
+                        style: TextStyle(
+                          fontFamily: 'Sedan',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                accountEmail: snapshot.hasData
+                    ? Text(
+                        snapshot.data!.email,
+                        style: const TextStyle(
+                          fontFamily: 'Sedan',
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      )
+                    : const Text(
+                        'Error Loading Data',
+                        style: TextStyle(
+                          fontFamily: 'Sedan',
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                currentAccountPicture: CircleAvatar(
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/icons/user.png',
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/school1.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/course.png',
+                      width: 25.0,
+                      height: 25.0,
+                    ),
+                    const SizedBox(width: 10.0),
+                    const Text(
+                      'My Courses',
+                      style: TextStyle(
+                        fontFamily: 'Sedan',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyCourses()),
+                  );
+                  print('My Courses button pressed!');
+                },
+              ),
+              ListTile(
+                title: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/announcement.png',
+                      width: 25.0,
+                      height: 25.0,
+                    ),
+                    const SizedBox(width: 10.0),
+                    const Text(
+                      'Announcements',
+                      style: TextStyle(
+                        fontFamily: 'Sedan',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Announcement(
+                        courseName: "course name goes here",
+                        roomNumber: "roomNumber goes here",
+                        isCancelled: true,
+                        announcement: "announcement goes here",
+                      ),
+                    ),
+                  );
+                  print('Announcements button pressed!');
+                },
+              ),
+              ListTile(
+                title: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/profile.png',
+                      width: 25.0,
+                      height: 25.0,
+                    ),
+                    const SizedBox(width: 10.0),
+                    const Text(
+                      'Profile',
+                      style: TextStyle(
+                        fontFamily: 'Sedan',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => StudentProfile(widget.My_Token),
+                    ),
+                  );
+                  print('Profile button pressed!');
+                },
+              ),
+              ListTile(
+                title: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/logout.png',
+                      width: 25.0,
+                      height: 25.0,
+                    ),
+                    const SizedBox(width: 10.0),
+                    const Text(
+                      'Logout',
+                      style: TextStyle(
+                        fontFamily: 'Sedan',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LogoutPage()),
+                  );
+                  print('Logout button pressed!');
+                },
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

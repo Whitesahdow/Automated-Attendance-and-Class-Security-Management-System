@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => userType == 'teacher'
-                                ? const InstructorHome()
+                                ? InstructorHome(token)
                                 : StudentHome(token)));
                   }
                 },
