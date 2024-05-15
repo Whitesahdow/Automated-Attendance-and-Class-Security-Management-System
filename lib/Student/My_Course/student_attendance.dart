@@ -72,8 +72,8 @@ class _AttendanceListState extends State<AttendanceList> {
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: attendanceRecord.status == AttendanceStatus.present
-                          ? Color.fromARGB(98, 7, 223, 54)
-                          : Color.fromARGB(139, 208, 43, 60),
+                          ? const Color.fromARGB(98, 7, 223, 54)
+                          : const Color.fromARGB(139, 208, 43, 60),
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                     child: Column(

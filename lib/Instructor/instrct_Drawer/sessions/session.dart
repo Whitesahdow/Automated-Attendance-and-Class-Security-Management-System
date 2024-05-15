@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Session extends StatefulWidget {
-  const Session({Key? key}) : super(key: key);
+  const Session({super.key});
 
   @override
   State<Session> createState() => _SessionState();
@@ -31,10 +31,12 @@ SessionData sessionData = SessionData();
 class Crs_Lists {
   final String name;
   final String pantone_value;
+  final String color;
 
   Crs_Lists({
     required this.name,
     required this.pantone_value,
+    required this.color,
   });
 }
 
@@ -65,6 +67,7 @@ class _SessionState extends State<Session> {
               .map((course) => Crs_Lists(
                     name: course['name'],
                     pantone_value: course['pantone_value'],
+                    color: course['color'],
                   ))
               .toList();
         });
@@ -126,7 +129,7 @@ class _SessionState extends State<Session> {
               value: _selectedRoomNumber,
               items: course_list
                   .map((course) => DropdownMenuItem<String>(
-                        value: course.name,
+                        value: course.color,
                         child: Text(course.name),
                       ))
                   .toList(),

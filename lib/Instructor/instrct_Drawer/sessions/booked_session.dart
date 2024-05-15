@@ -9,13 +9,13 @@ class BookedSessionPage extends StatefulWidget {
   final String announcement;
 
   const BookedSessionPage({
-    Key? key,
+    super.key,
     required this.courseName,
     required this.roomNumber,
     required this.section,
     required this.batch,
     required this.announcement,
-  }) : super(key: key);
+  });
 
   @override
   State<BookedSessionPage> createState() => _BookedSessionPageState();

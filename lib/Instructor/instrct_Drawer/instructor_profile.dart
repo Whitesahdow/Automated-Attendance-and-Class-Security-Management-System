@@ -5,18 +5,17 @@ import 'package:http/http.dart' as http;
 
 class InstructorProfile extends StatefulWidget {
   const InstructorProfile(
-      {Key? key,
+      {super.key,
       required String first_name,
       required String last_name,
       required String email,
-      required String id})
-      : super(key: key);
+      required String id});
   @override
   _StudentProfileState createState() => _StudentProfileState();
 }
 
 class _StudentProfileState extends State<InstructorProfile> {
-  late Future<user_info> _dataFuture;
+  late Future<Instructor_info> _dataFuture;
 
   @override
   void initState() {
@@ -24,16 +23,20 @@ class _StudentProfileState extends State<InstructorProfile> {
     _dataFuture = getdata();
   }
 
-  Future<user_info> getdata() async {
+  Future<Instructor_info> getdata() async {
     final response = await http.get(Uri.parse("https://reqres.in/api/users/2"));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['data'];
-      final user = user_info(
+      final user = Instructor_info(
         first_name: data['first_name'],
+        middle_name: data['middle_name'],
         last_name: data['last_name'],
         email: data['email'],
-        id: data['id'].toString(),
+        department: data['department'],
+        gender: data['gender'],
+        qualification: data['qualification'],
+        teacher_id: data['student_id'].toString(),
       );
       return user;
     } else {
@@ -55,13 +58,13 @@ class _StudentProfileState extends State<InstructorProfile> {
         ),
         backgroundColor: const Color.fromARGB(255, 170, 163, 163),
       ),
-      body: FutureBuilder<user_info>(
+      body: FutureBuilder<Instructor_info>(
         future: _dataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: Cant find anything'));
+            return const Center(child: Text('Error: Cant find anything'));
           } else {
             final user = snapshot.data!;
             return Center(
@@ -70,7 +73,7 @@ class _StudentProfileState extends State<InstructorProfile> {
                 children: [
                   Text('Name: ${user.first_name} ${user.last_name}'),
                   Text('Email: ${user.email}'),
-                  Text('id: ${user.id} '),
+                  Text('id: ${user.teacher_id} '),
                 ],
               ),
             );

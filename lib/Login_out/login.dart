@@ -131,15 +131,18 @@ class _LoginPageState extends State<LoginPage> {
                   height: 20.0), // Add space between password field and button
               // Login button
               ElevatedButton(
-                onPressed: () {
-                  auth_controller.loginuser();
-
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => userType == 'teacher'
-                              ? InstructorHome()
-                              : StudentHome()));
+                onPressed: () async {
+                  var token = await auth_controller.loginuser(userType);
+                  if (auth_controller.reuest_responese.loginArr == "true") {
+                    print(
+                        " in the if statementtttttttttttttttttttttttttttttttttttttttttttttttttt ${token}");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => userType == 'teacher'
+                                ? const InstructorHome()
+                                : StudentHome(token)));
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(

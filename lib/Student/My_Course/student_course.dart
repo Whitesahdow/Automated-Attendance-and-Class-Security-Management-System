@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 
 class MyCourses extends StatelessWidget {
   List<Student_Courses> course_list =
-      []; // a list of data type stu_course its the class i made in sru_course file
+      [];
+
+  MyCourses({super.key}); // a list of data type stu_course its the class i made in sru_course file
 
   //  static const String apiKey = '17eaead0-359f-46e2-860f-91ca579d7db5';
 
@@ -24,11 +26,11 @@ class MyCourses extends StatelessWidget {
       var jsonData = jsonDecode(response.body);
 
       for (var eachTeam in jsonData['data']) {
-        final crs_list = Student_Courses(
+        final crsList = Student_Courses(
           name: eachTeam['name'],
           pantone_value: eachTeam['pantone_value'],
         );
-        course_list.add(crs_list);
+        course_list.add(crsList);
         // an object was created called student_courses and in the object is a list
         // course_list is now a list which contains objects defined with different parameters
       }

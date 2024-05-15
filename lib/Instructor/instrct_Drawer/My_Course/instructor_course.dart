@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 class Instructor_course extends StatelessWidget {
   List<Instructor_Courses> course_list = [];
 
- 
 
   Future<List<Instructor_Courses>> getCourse() async {
     var url = Uri.https('reqres.in', '/api/unknown');
@@ -23,11 +22,11 @@ class Instructor_course extends StatelessWidget {
       var jsonData = jsonDecode(response.body);
 
       for (var eachTeam in jsonData['data']) {
-        final crs_list = Instructor_Courses(
+        final crsList = Instructor_Courses(
           name: eachTeam['name'],
           pantone_value: eachTeam['pantone_value'],
         );
-        course_list.add(crs_list);
+        course_list.add(crsList);
       }
 
       return course_list;
@@ -56,7 +55,7 @@ class Instructor_course extends StatelessWidget {
           future: getCourse(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
+              return const Center(
                   child:
                       CircularProgressIndicator()); // circular loading while it fetchs the data
             } else if (snapshot.hasError) {
@@ -66,7 +65,7 @@ class Instructor_course extends StatelessWidget {
             } else {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
