@@ -11,8 +11,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   String userType = ''; // Variable to store user type (teacher/student)
-  String email = ''; // Variable to store email address
-  String password = ''; // Variable to store password
+  // String email = ''; // Variable to store email address
+  // String password = ''; // Variable to store password
 
   // Function to handle user type selection
   void setUserType(String type) {
@@ -136,12 +136,17 @@ class _LoginPageState extends State<LoginPage> {
                   if (auth_controller.reuest_responese.loginArr == "true") {
                     print(
                         " in the if statementtttttttttttttttttttttttttttttttttttttttttttttttttt ${token}");
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => userType == 'teacher'
-                                ? const InstructorHome()
-                                : StudentHome(token)));
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => userType == 'teacher'
+                              ? InstructorHome(token)
+                              : StudentHome(token)),
+                      ModalRoute.withName('/'),
+                    );
+                  } else {
+                    print("Login has failed expect a dialogue box");
+                    _showLoginFailedDialog(context);
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -184,4 +189,37 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
+
+void _showLoginFailedDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text(
+        'Login Failed',
+        style: TextStyle(
+          fontFamily: 'Sedan',
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+        ),
+      ),
+      content: const Text(
+        'Please try again.',
+        style: TextStyle(
+          fontFamily: 'Sedan',
+          fontSize: 17,
+          fontWeight: FontWeight.normal,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(
+              context), // Close dialog and return to the same page
+          child: const Text('Okay'),
+        ),
+      ],
+    ),
+  );
 }

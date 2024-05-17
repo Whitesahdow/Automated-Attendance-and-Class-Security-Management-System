@@ -11,7 +11,9 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 
 class InstructorHome extends StatefulWidget {
-  const InstructorHome({super.key});
+  final String? My_Token;
+  const InstructorHome(this.My_Token, {super.key});
+
   @override
   State<InstructorHome> createState() => _StudentPageState();
 }
@@ -27,10 +29,16 @@ class _StudentPageState extends State<InstructorHome> {
   }
 
   Future<Instructor_info> getdata() async {
-    final response = await http.get(Uri.parse("https://reqres.in/api/users/2"));
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/instructor/me"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${widget.My_Token}"
+      },
+    );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['data'];
+      final data = jsonDecode(response.body);
       final user = Instructor_info(
         first_name: data['first_name'],
         middle_name: data['middle_name'],
@@ -40,6 +48,7 @@ class _StudentPageState extends State<InstructorHome> {
         gender: data['gender'],
         qualification: data['qualification'],
         teacher_id: data['teacher_id'].toString(),
+        id_key: data['id'],
       );
       return user;
     } else {
@@ -86,7 +95,7 @@ class _StudentPageState extends State<InstructorHome> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Welcome, ${snapshot.data!.first_name} ${snapshot.data!.last_name}!',
+                          'Welcome, ${snapshot.data!.first_name} ${snapshot.data!.middle_name}!',
                           style: const TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
@@ -219,8 +228,10 @@ class _StudentPageState extends State<InstructorHome> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => Instructor_course()));
-                  print('My Courses button pressed!');
+                          builder: (context) =>
+                              Instructor_course(widget.My_Token)));
+                  print(
+                      'My Courses button pressed!....................................${widget.My_Token}');
                 },
               ),
               ListTile(
@@ -243,8 +254,10 @@ class _StudentPageState extends State<InstructorHome> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Session()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Session(widget.My_Token)));
                   print('Session button pressed!');
                 },
               ),
@@ -271,20 +284,8 @@ class _StudentPageState extends State<InstructorHome> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => InstructorProfile(
-                                first_name: snapshot.hasData
-                                    ? snapshot.data!.first_name
-                                    : '',
-                                last_name: snapshot.hasData
-                                    ? snapshot.data!.last_name
-                                    : '',
-                                email: snapshot.hasData
-                                    ? snapshot.data!.email
-                                    : '',
-                                id: snapshot.hasData
-                                    ? snapshot.data!.teacher_id
-                                    : '',
-                              )));
+                          builder: (context) =>
+                              InstructorProfile(widget.My_Token)));
                   print('Profile button pressed!');
                 },
               ),
@@ -308,10 +309,12 @@ class _StudentPageState extends State<InstructorHome> {
                   ],
                 ),
                 onTap: () {
+                  String usertype = "Teacher";
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const LogoutPage()));
+                          builder: (context) =>
+                              LogoutPage(widget.My_Token, usertype)));
                   print('Logout button pressed!');
                 },
               ),

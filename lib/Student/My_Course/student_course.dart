@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class MyCourses extends StatelessWidget {
-  List<Student_Courses> course_list =
-      [];
+  List<Student_Courses> course_list = [];
 
-  MyCourses({super.key}); // a list of data type stu_course its the class i made in sru_course file
-
-  //  static const String apiKey = '17eaead0-359f-46e2-860f-91ca579d7db5';
+  MyCourses(
+      {super.key}); // a list of data type stu_course its the class i made in sru_course file
 
   Future<List<Student_Courses>> getCourse() async {
     var url = Uri.https('reqres.in', '/api/unknown');
