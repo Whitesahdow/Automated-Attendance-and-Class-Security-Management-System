@@ -1,7 +1,7 @@
+import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/sessions_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'booked_session.dart';
 
 class Session extends StatefulWidget {
@@ -13,55 +13,40 @@ class Session extends StatefulWidget {
   State<Session> createState() => _SessionState();
 }
 
-class SessionData {
-  String? courseName;
-  String? roomNumber;
-  String? section;
-  String? batch;
-  String? announcement;
-
-  SessionData({
-    this.courseName,
-    this.roomNumber,
-    this.section,
-    this.batch,
-    this.announcement,
-  });
-}
-
-class CrsLists {
-  final String name;
-  final String pantoneValue;
-  final String color;
-
-  CrsLists({
-    required this.name,
-    required this.pantoneValue,
-    required this.color,
-  });
-}
+// "course_category": "Major",
+//         "course_code": "ECEg4103",
+//         "course_credit": "4",
+//         "course_department": "Electrical",
+//         "course_name": "Computer Architecture and Organization",
 
 class _SessionState extends State<Session> {
-  List<CrsLists> courseList = [];
+  List<Menu_list> menu_lists = [];
   String? _selectedCourseName;
   String? _selectedRoomNumber;
   String? _selectedSection;
   String? _selectedBatch;
-  final _announcementController = TextEditingController();
+  String? _selectedtime;
+
   SessionData sessionData = SessionData();
 
+  static const List<String> _time = ['10', '15', '20'];
+  get time => "";
   @override
   void initState() {
     super.initState();
     _fetchCourseList();
+    _fetch_Room_List();
+    print(menu_lists);
+    // _fetch_Section_List();
+    //_fetch_Batch_List();
   }
 
-  @override
-  void dispose() {
-    _announcementController.dispose();
-    super.dispose();
-  }
-
+  // @override
+  // void dispose() {
+  //   _announcementController.dispose();
+  //   super.dispose();
+  // }
+//#############################################______fetchCourseList_____####################
   Future<void> _fetchCourseList() async {
     try {
       final response = await http.get(
@@ -76,11 +61,9 @@ class _SessionState extends State<Session> {
         var jsonData = jsonDecode(response.body);
 
         setState(() {
-          courseList = (jsonData as List)
-              .map((course) => CrsLists(
-                    name: course['course_name'],
-                    pantoneValue: course['course_code'],
-                    color: course['id'].toString(),
+          menu_lists = (jsonData as List)
+              .map((choice) => Menu_list(
+                    course_name: choice['course_name'],
                   ))
               .toList();
         });
@@ -93,6 +76,97 @@ class _SessionState extends State<Session> {
     }
   }
 
+//#############################################_______fetch_Room_List _____####################
+  Future<void> _fetch_Room_List() async {
+    try {
+      final response = await http.get(
+        Uri.parse("https://besufikadyilma.tech/room/get"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${widget.myToken}"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+
+        setState(() {
+          menu_lists = (jsonData["rooms"]["room_no"] as List)
+              .map((choice) => Menu_list(
+                    Room_number: choice['Room_number'],
+                  ))
+              .toList();
+        });
+      } else {
+        throw Exception('.....................Failed to load Rooms. ');
+      }
+    } catch (e) {
+      print('Error: $e');
+      // Handle error
+    }
+  }
+
+  //##############################################__fetch_Section_List__#############
+  Future<void> _fetch_Section_List() async {
+    try {
+      final response = await http.get(
+        Uri.parse("https://besufikadyilma.tech/room/get"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${widget.myToken}"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+
+        setState(() {
+          menu_lists = (jsonData["section"] as List)
+              .map((choice) => Menu_list(
+                    Section: choice['Room_number'],
+                  ))
+              .toList();
+        });
+      } else {
+        throw Exception('............Failed to load Sections');
+      }
+    } catch (e) {
+      print('Error: $e');
+      // Handle error
+    }
+  }
+
+  //#############################################______ fetch Batch List_____####################
+  Future<void> _fetch_Batch_List() async {
+    try {
+      final response = await http.get(
+        Uri.parse("https://besufikadyilma.tech/room/get"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${widget.myToken}"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+
+        setState(() {
+          menu_lists = (jsonData["Batch_No"] as List)
+              .map((choice) => Menu_list(
+                    Batch_No: choice['Batch_No'],
+                  ))
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load batch list');
+      }
+    } catch (e) {
+      print('Error: $e');
+      // Handle error
+    }
+  }
+
+  //##############################################################################
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,12 +184,14 @@ class _SessionState extends State<Session> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+//#############################################################################################
+
             DropdownButtonFormField<String>(
               value: _selectedCourseName,
-              items: courseList
-                  .map((course) => DropdownMenuItem<String>(
-                        value: course.name,
-                        child: Text(course.name),
+              items: menu_lists
+                  .map((choice) => DropdownMenuItem<String>(
+                        value: choice.course_name,
+                        child: Text(choice.course_name.toString()),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -137,12 +213,15 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
+
+//#############################################################################################
+
             DropdownButtonFormField<String>(
               value: _selectedRoomNumber,
-              items: courseList
-                  .map((course) => DropdownMenuItem<String>(
-                        value: course.color,
-                        child: Text(course.name),
+              items: menu_lists
+                  .map((choice) => DropdownMenuItem<String>(
+                        value: choice.Room_number,
+                        child: Text(choice.Room_number.toString()),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -164,12 +243,15 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
+
+//#############################################################################################
+
             DropdownButtonFormField<String>(
               value: _selectedSection,
-              items: courseList
-                  .map((course) => DropdownMenuItem<String>(
-                        value: course.name,
-                        child: Text(course.name),
+              items: menu_lists
+                  .map((choice) => DropdownMenuItem<String>(
+                        value: choice.course_name,
+                        child: Text(choice.course_name.toString()),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -191,12 +273,15 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
+
+//#############################################################################################
+
             DropdownButtonFormField<String>(
               value: _selectedBatch,
-              items: courseList
+              items: menu_lists
                   .map((course) => DropdownMenuItem<String>(
-                        value: course.name,
-                        child: Text(course.name),
+                        value: course.course_name,
+                        child: Text(course.course_name.toString()),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -218,13 +303,20 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
-            TextField(
-              controller: _announcementController,
-              onChanged: (value) {
-                sessionData.announcement = value;
-              },
+
+//#############################################################################################
+
+            DropdownButtonFormField<String>(
+              value: _selectedtime,
+              items: _time
+                  .map((time) => DropdownMenuItem<String>(
+                        value: time,
+                        child: Text("$time min"),
+                      ))
+                  .toList(),
+              onChanged: (value) => setState(() => _selectedtime = value!),
               decoration: const InputDecoration(
-                labelText: 'Announcement (Optional)',
+                labelText: 'Time (in minuts)',
                 labelStyle: TextStyle(
                   fontFamily: 'Sedan',
                   fontSize: 16,

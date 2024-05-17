@@ -37,7 +37,7 @@ class Instructor_course extends StatelessWidget {
       return course_list;
     } else {
       // Handle error here
-      throw Exception('Failed to load teams');
+      throw Exception('Failed to load items');
     }
   }
 

@@ -6,11 +6,12 @@ import 'package:http/http.dart' as http;
 class InstructorProfile extends StatefulWidget {
   final String? My_Token;
   const InstructorProfile(this.My_Token, {super.key});
+
   @override
-  _StudentProfileState createState() => _StudentProfileState();
+  _InstructorProfileState createState() => _InstructorProfileState();
 }
 
-class _StudentProfileState extends State<InstructorProfile> {
+class _InstructorProfileState extends State<InstructorProfile> {
   late Future<Instructor_info> _dataFuture;
 
   @override
@@ -47,6 +48,19 @@ class _StudentProfileState extends State<InstructorProfile> {
     }
   }
 
+  Future<void> _refreshData() async {
+    try {
+      final newData = getdata();
+      setState(() {
+        _dataFuture = newData;
+      });
+      await newData; // Ensure the new future is awaited and exceptions are handled.
+    } catch (e) {
+      // Handle the error appropriately here
+      print('Error refreshing data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,32 +75,58 @@ class _StudentProfileState extends State<InstructorProfile> {
         ),
         backgroundColor: const Color.fromARGB(255, 170, 163, 163),
       ),
-      body: FutureBuilder<Instructor_info>(
-        future: _dataFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Error: Cant find anything'));
-          } else {
-            final user = snapshot.data!;
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: FutureBuilder<Instructor_info>(
+          future: _dataFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return ListView(
                 children: [
-                  Text(
-                      'Name: ${user.first_name} ${user.middle_name} ${user.last_name}'),
-                  Text('Email: ${user.email}'),
-                  Text('Id: ${user.teacher_id} '),
-                  Text('Department: ${user.department}'),
-                  Text('gender: ${user.gender} '),
-                  Text('Qualification: ${user.qualification}'),
-                  Text('Id key: ${user.id_key} '),
+                  const SizedBox(height: 20),
+                  const Center(child: Text('Error: Cannot find anything')),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _refreshData,
+                      child: const Text('Retry'),
+                    ),
+                  ),
                 ],
-              ),
-            );
-          }
-        },
+              );
+            } else {
+              final user = snapshot.data!;
+              return ListView(
+                children: [
+                  ListTile(
+                    title: Text(
+                        'Name: ${user.first_name} ${user.middle_name} ${user.last_name}'),
+                  ),
+                  ListTile(
+                    title: Text('Email: ${user.email}'),
+                  ),
+                  ListTile(
+                    title: Text('Id: ${user.teacher_id}'),
+                  ),
+                  ListTile(
+                    title: Text('Department: ${user.department}'),
+                  ),
+                  ListTile(
+                    title: Text('Gender: ${user.gender}'),
+                  ),
+                  ListTile(
+                    title: Text('Qualification: ${user.qualification}'),
+                  ),
+                  ListTile(
+                    title: Text('Id key: ${user.id_key}'),
+                  ),
+                ],
+              );
+            }
+          },
+        ),
       ),
     );
   }
