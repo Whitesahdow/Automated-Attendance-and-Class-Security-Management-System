@@ -1,30 +1,35 @@
 import 'dart:convert';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instr_course.dart';
 import 'package:AAMCS_App/Student/My_Course/course_detail.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Instructor_course extends StatelessWidget {
+  final String? My_Token;
   List<Instructor_Courses> course_list = [];
-
+  Instructor_course(this.My_Token, {super.key});
 
   Future<List<Instructor_Courses>> getCourse() async {
-    var url = Uri.https('reqres.in', '/api/unknown');
-    // final response = await http.get(Uri.parse("api.balldontlie.io"));
-    var response = await http.get(
-      url,
-      // headers: {
-      //   'Authorization': 'Bearer $apiKey',
-      // },
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/instructor/my-courses"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${My_Token}"
+      },
     );
-
+    print("......................\n$My_Token");
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 
-      for (var eachTeam in jsonData['data']) {
+      for (var eachTeam in jsonData) {
         final crsList = Instructor_Courses(
-          name: eachTeam['name'],
-          pantone_value: eachTeam['pantone_value'],
+          course_category: eachTeam['course_category'],
+          course_code: eachTeam['course_code'],
+          course_credit: eachTeam['course_credit'],
+          course_department: eachTeam['course_department'],
+          course_name: eachTeam['course_name'],
+          id: eachTeam['id'],
         );
         course_list.add(crsList);
       }
@@ -76,15 +81,16 @@ class Instructor_course extends StatelessWidget {
                       ),
                       child: ListTile(
                         // it returns a list with padding of the fetched data
-                        title: Text(snapshot.data![index].name),
-                        subtitle: Text(snapshot.data![index].pantone_value),
+                        title: Text(snapshot.data![index].course_name),
+                        subtitle: Text(
+                            "Credit Hours: ${snapshot.data![index].course_credit}"),
                         onTap: () => Navigator.push(
                           // when the list is tapped it will open a page
                           context,
                           MaterialPageRoute(
                             builder: (context) => CourseDetails(
-                                courseName:
-                                    'Mobile App Development'), //for now it openes only mobile dev.t page
+                                courseName: snapshot.data![index]
+                                    .course_name), //for now it openes only mobile dev.t page
                           ),
                         ),
                       ),

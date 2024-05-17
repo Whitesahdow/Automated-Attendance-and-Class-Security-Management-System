@@ -42,6 +42,7 @@ class _StudentProfileState extends State<StudentProfile> {
         batch: data['batch'],
         section: data['section'],
         id: data['student_id'].toString(),
+        id_key: data['id'],
       );
       print(data);
       return user;
@@ -82,10 +83,11 @@ class _StudentProfileState extends State<StudentProfile> {
                   Text(
                       'Name: ${user.first_name} ${user.middle_name} ${user.last_name}'),
                   Text('Email: ${user.email}'),
-                  Text('Id: ${user.id} '),
+                  Text('Student Id: ${user.id} '),
                   Text('Department: ${user.department}'),
                   Text('gender: ${user.gender} '),
                   Text('Batch section: ${user.batch} ${user.section}'),
+                  Text('Id key: ${user.id_key} '),
                 ],
               ),
             );

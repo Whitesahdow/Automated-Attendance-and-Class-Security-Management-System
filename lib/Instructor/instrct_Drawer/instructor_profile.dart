@@ -39,6 +39,7 @@ class _StudentProfileState extends State<InstructorProfile> {
         gender: data['gender'],
         qualification: data['qualification'],
         teacher_id: data['teacher_id'].toString(),
+        id_key: data['id'],
       );
       return user;
     } else {
@@ -80,6 +81,7 @@ class _StudentProfileState extends State<InstructorProfile> {
                   Text('Department: ${user.department}'),
                   Text('gender: ${user.gender} '),
                   Text('Qualification: ${user.qualification}'),
+                  Text('Id key: ${user.id_key} '),
                 ],
               ),
             );

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:AAMCS_App/Login_out/logout.dart';
 import 'package:AAMCS_App/Student/My_Course/student_course.dart';
-import 'package:AAMCS_App/Student/stu_Drawer/Drawer_menu.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/student_announcement.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/student_profile.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
@@ -67,8 +66,9 @@ class _StudentPageState extends State<StudentHome> {
         batch: data['batch'],
         section: data['section'],
         id: data['student_id'].toString(),
+        id_key: data['id'],
       );
-      print(data);
+      //print(data);
       return user;
     } else {
       throw Exception('Failed to load data');
@@ -336,9 +336,12 @@ class _StudentPageState extends State<StudentHome> {
                   ],
                 ),
                 onTap: () {
+                  String usertype = "Student";
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LogoutPage()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            LogoutPage(widget.My_Token, usertype)),
                   );
                   print('Logout button pressed!');
                 },

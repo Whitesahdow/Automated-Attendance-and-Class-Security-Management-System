@@ -48,6 +48,7 @@ class _StudentPageState extends State<InstructorHome> {
         gender: data['gender'],
         qualification: data['qualification'],
         teacher_id: data['teacher_id'].toString(),
+        id_key: data['id'],
       );
       return user;
     } else {
@@ -227,8 +228,10 @@ class _StudentPageState extends State<InstructorHome> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => Instructor_course()));
-                  print('My Courses button pressed!');
+                          builder: (context) =>
+                              Instructor_course(widget.My_Token)));
+                  print(
+                      'My Courses button pressed!....................................${widget.My_Token}');
                 },
               ),
               ListTile(
@@ -251,8 +254,10 @@ class _StudentPageState extends State<InstructorHome> {
                   ],
                 ),
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Session()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Session(widget.My_Token)));
                   print('Session button pressed!');
                 },
               ),
@@ -304,10 +309,12 @@ class _StudentPageState extends State<InstructorHome> {
                   ],
                 ),
                 onTap: () {
+                  String usertype = "Teacher";
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const LogoutPage()));
+                          builder: (context) =>
+                              LogoutPage(widget.My_Token, usertype)));
                   print('Logout button pressed!');
                 },
               ),
