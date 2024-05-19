@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/sessions_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,22 +15,19 @@ class Session extends StatefulWidget {
   State<Session> createState() => _SessionState();
 }
 
-// "course_category": "Major",
-//         "course_code": "ECEg4103",
-//         "course_credit": "4",
-//         "course_department": "Electrical",
-//         "course_name": "Computer Architecture and Organization",
-
 class _SessionState extends State<Session> {
   List<Menu_list> menu_lists = [];
-  String? _selectedCourseName;
+  //String? _selectedCourseName;
   String? _selectedRoomNumber;
   String? _selectedSection;
+  String? _selectedDepartment;
   String? _selectedBatch;
   String? _selectedtime;
-
   SessionData sessionData = SessionData();
-
+  List roomnumber = [];
+  List<dynamic> sectionList = [];
+  List<dynamic> department_list = [];
+  List<dynamic> batch_No = [];
   static const List<String> _time = ['10', '15', '20'];
   get time => "";
   @override
@@ -36,9 +35,9 @@ class _SessionState extends State<Session> {
     super.initState();
     _fetchCourseList();
     _fetch_Room_List();
-    print(menu_lists);
-    // _fetch_Section_List();
-    //_fetch_Batch_List();
+
+    _fetch_Batch_List();
+    _fetch_Dept_List();
   }
 
   // @override
@@ -71,7 +70,7 @@ class _SessionState extends State<Session> {
         throw Exception('Failed to load courses');
       }
     } catch (e) {
-      print('Error: $e');
+      print('Errorrrrrrrrrrrrrrrrrrrr : $e');
       // Handle error
     }
   }
@@ -89,28 +88,55 @@ class _SessionState extends State<Session> {
 
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
-
+        print(jsonData);
         setState(() {
-          menu_lists = (jsonData["rooms"]["room_no"] as List)
-              .map((choice) => Menu_list(
-                    Room_number: choice['Room_number'],
-                  ))
-              .toList();
+          roomnumber =
+              jsonData.map((element) => element['room'] as String).toList();
+          print("working");
         });
       } else {
         throw Exception('.....................Failed to load Rooms. ');
       }
     } catch (e) {
-      print('Error: $e');
-      // Handle error
+      print('Erro0000000000000000r: $e');
     }
   }
 
   //##############################################__fetch_Section_List__#############
-  Future<void> _fetch_Section_List() async {
+
+  Future<InstInfo> getdata() async {
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/instructor/me"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${widget.myToken}"
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      final user = InstInfo(
+        id_key: jsonData['id'],
+      );
+      return user;
+    } else {
+      throw Exception('Failed to load data');
+    }
+    // return InstInfo();
+  }
+
+  Future<void> _fetchsectionList() async {
+    final data = await getdata();
+    const url_base = "https://besufikadyilma.tech/instructor/get-class";
+    final user = data.id_key;
+    String cleanedId = user!.replaceAll('-', '');
+    print(cleanedId);
+    // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("https://besufikadyilma.tech/room/get"),
+        Uri.parse("$url_base?instructors_id= $cleanedId"),
+        // Uri.parse(
+        //     ""),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer ${widget.myToken}"
@@ -119,16 +145,14 @@ class _SessionState extends State<Session> {
 
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
-
+        print(jsonData);
         setState(() {
-          menu_lists = (jsonData["section"] as List)
-              .map((choice) => Menu_list(
-                    Section: choice['Room_number'],
-                  ))
+          sectionList = (jsonData)
+              .map((course) => ScnLists(section: course['class']['section']))
               .toList();
         });
       } else {
-        throw Exception('............Failed to load Sections');
+        throw Exception('Failed to load courses');
       }
     } catch (e) {
       print('Error: $e');
@@ -136,11 +160,19 @@ class _SessionState extends State<Session> {
     }
   }
 
-  //#############################################______ fetch Batch List_____####################
+  //#############################################______ fetch Department List_____####################
   Future<void> _fetch_Batch_List() async {
+    final dept_data = await getdata();
+    const url_base = "https://besufikadyilma.tech/instructor/get-class";
+    final dep_user = dept_data.id_key;
+    String cleanedId = dep_user!.replaceAll('-', '');
+    print(cleanedId);
+    // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("https://besufikadyilma.tech/room/get"),
+        Uri.parse("$url_base?instructors_id= $cleanedId"),
+        // Uri.parse(
+        //     ""),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer ${widget.myToken}"
@@ -149,16 +181,52 @@ class _SessionState extends State<Session> {
 
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
-
+        print(jsonData);
         setState(() {
-          menu_lists = (jsonData["Batch_No"] as List)
-              .map((choice) => Menu_list(
-                    Batch_No: choice['Batch_No'],
-                  ))
+          batch_No = (jsonData)
+              .map(
+                  (course) => BatchList(batch_number: course['class']['batch']))
               .toList();
         });
       } else {
-        throw Exception('Failed to load batch list');
+        throw Exception('Failed to load courses');
+      }
+    } catch (e) {
+      print('Error: $e');
+      // Handle error
+    }
+  }
+
+//################################
+  Future<void> _fetch_Dept_List() async {
+    final dept_data = await getdata();
+    const url_base = "https://besufikadyilma.tech/instructor/get-class";
+    final dep_user = dept_data.id_key;
+    String cleanedId = dep_user!.replaceAll('-', '');
+    print(cleanedId);
+    // print("...................${user.toString()}");
+    try {
+      final response = await http.get(
+        Uri.parse("$url_base?instructors_id= $cleanedId"),
+        // Uri.parse(
+        //     ""),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ${widget.myToken}"
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        print(jsonData);
+        setState(() {
+          department_list = (jsonData)
+              .map((course) =>
+                  DeptList(department_name: course['class']['department']))
+              .toList();
+        });
+      } else {
+        throw Exception('Failed to load courses');
       }
     } catch (e) {
       print('Error: $e');
@@ -186,17 +254,17 @@ class _SessionState extends State<Session> {
           children: [
 //#############################################################################################
 
-            DropdownButtonFormField<String>(
-              value: _selectedCourseName,
+            DropdownButtonFormField<String?>(
+              // value: _selectedCourseName,
               items: menu_lists
                   .map((choice) => DropdownMenuItem<String>(
-                        value: choice.course_name,
+                        value: choice.course_name.toString(),
                         child: Text(choice.course_name.toString()),
                       ))
                   .toList(),
               onChanged: (value) {
                 setState(() {
-                  _selectedCourseName = value;
+                  //_selectedCourseName = value;
                   sessionData.courseName = value;
                 });
               },
@@ -218,80 +286,23 @@ class _SessionState extends State<Session> {
 
             DropdownButtonFormField<String>(
               value: _selectedRoomNumber,
-              items: menu_lists
-                  .map((choice) => DropdownMenuItem<String>(
-                        value: choice.Room_number,
-                        child: Text(choice.Room_number.toString()),
+              items: roomnumber
+                  .map((room) => DropdownMenuItem<String>(
+                        value: room,
+                        child: Text(room),
                       ))
                   .toList(),
               onChanged: (value) {
+                print(
+                    "Selected room: $value"); // Check if onChanged is triggered
                 setState(() {
                   _selectedRoomNumber = value;
-                  sessionData.roomNumber = value;
+                  sessionData.roomNumber =
+                      value; // Ensure sessionData is correctly updated
                 });
               },
               decoration: const InputDecoration(
                 labelText: 'Room Number',
-                labelStyle: TextStyle(
-                  fontFamily: 'Sedan',
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-
-//#############################################################################################
-
-            DropdownButtonFormField<String>(
-              value: _selectedSection,
-              items: menu_lists
-                  .map((choice) => DropdownMenuItem<String>(
-                        value: choice.course_name,
-                        child: Text(choice.course_name.toString()),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedSection = value;
-                  sessionData.section = value;
-                });
-              },
-              decoration: const InputDecoration(
-                labelText: 'Section',
-                labelStyle: TextStyle(
-                  fontFamily: 'Sedan',
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-
-//#############################################################################################
-
-            DropdownButtonFormField<String>(
-              value: _selectedBatch,
-              items: menu_lists
-                  .map((course) => DropdownMenuItem<String>(
-                        value: course.course_name,
-                        child: Text(course.course_name.toString()),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedBatch = value;
-                  sessionData.batch = value;
-                });
-              },
-              decoration: const InputDecoration(
-                labelText: 'Batch',
                 labelStyle: TextStyle(
                   fontFamily: 'Sedan',
                   fontSize: 16,
@@ -316,7 +327,7 @@ class _SessionState extends State<Session> {
                   .toList(),
               onChanged: (value) => setState(() => _selectedtime = value!),
               decoration: const InputDecoration(
-                labelText: 'Time (in minuts)',
+                labelText: 'Time ( minutes)',
                 labelStyle: TextStyle(
                   fontFamily: 'Sedan',
                   fontSize: 16,
@@ -328,6 +339,91 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
+//################################################################
+            DropdownButtonFormField<String>(
+              value: _selectedDepartment,
+              items: department_list
+                  .map((dept_choice) => DropdownMenuItem<String>(
+                        value: dept_choice.department_name,
+                        child: Text(dept_choice.department_name),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedDepartment = value;
+                  sessionData.department = value;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'Department',
+                labelStyle: TextStyle(
+                  fontFamily: 'Sedan',
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+//##############################################################################
+            DropdownButtonFormField<String>(
+              value: _selectedBatch,
+              items: batch_No
+                  .map((batchchoice) => DropdownMenuItem<String>(
+                        value: batchchoice.batch_number,
+                        child: Text(batchchoice.batch_number),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedBatch = value;
+                  sessionData.batch = value;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'Batch Number',
+                labelStyle: TextStyle(
+                  fontFamily: 'Sedan',
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            //######################################################
+            DropdownButtonFormField<String>(
+              value: _selectedSection,
+              items: sectionList
+                  .map((course) => DropdownMenuItem<String>(
+                        value: course.section,
+                        child: Text(course.section),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedSection = value;
+                  sessionData.section = value;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'Section',
+                labelStyle: TextStyle(
+                  fontFamily: 'Sedan',
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+//##############################################################################
             ElevatedButton(
               onPressed: () {
                 _showConfirmationDialog(context);
@@ -385,7 +481,7 @@ class _SessionState extends State<Session> {
                     roomNumber: sessionData.roomNumber ?? '',
                     section: sessionData.section ?? '',
                     batch: sessionData.batch ?? '',
-                    announcement: sessionData.announcement ?? '',
+                    department: sessionData.department ?? '',
                   ),
                 ),
               );

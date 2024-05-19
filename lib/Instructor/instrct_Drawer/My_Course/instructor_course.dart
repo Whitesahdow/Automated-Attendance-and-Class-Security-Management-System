@@ -5,20 +5,27 @@ import 'package:AAMCS_App/Student/My_Course/course_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class Instructor_course extends StatelessWidget {
+class Instructor_course extends StatefulWidget {
   final String? My_Token;
-  List<Instructor_Courses> course_list = [];
+
   Instructor_course(this.My_Token, {super.key});
+
+  @override
+  State<Instructor_course> createState() => _Instructor_courseState();
+}
+
+class _Instructor_courseState extends State<Instructor_course> {
+  List<Instructor_Courses> course_list = [];
 
   Future<List<Instructor_Courses>> getCourse() async {
     final response = await http.get(
       Uri.parse("https://besufikadyilma.tech/instructor/my-courses"),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${My_Token}"
+        "Authorization": "Bearer ${widget.My_Token}"
       },
     );
-    print("......................\n$My_Token");
+    print("......................\n${widget.My_Token}");
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 

@@ -6,7 +6,7 @@ class BookedSessionPage extends StatefulWidget {
   final String roomNumber;
   final String section;
   final String batch;
-  final String announcement;
+  final String department;
 
   const BookedSessionPage({
     super.key,
@@ -14,7 +14,7 @@ class BookedSessionPage extends StatefulWidget {
     required this.roomNumber,
     required this.section,
     required this.batch,
-    required this.announcement,
+    required this.department,
   });
 
   @override
@@ -47,9 +47,9 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               Text(
-                'Course Name: ${widget.courseName}',
+                'Course Name : ${widget.courseName}',
                 style: const TextStyle(
                   fontFamily: 'sedan',
                   fontSize: 16,
@@ -60,16 +60,16 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               const SizedBox(height: 5.0),
             if (_isReserved || // Show details even if reserved but empty
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               Text(
-                'Room Number: ${widget.roomNumber}',
+                'Room Number : ${widget.roomNumber}',
                 style: const TextStyle(
                   fontFamily: 'sedan',
                   fontSize: 16,
@@ -80,16 +80,16 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               const SizedBox(height: 5.0),
             if (_isReserved || // Show details even if reserved but empty
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               Text(
-                'Section: ${widget.section}',
+                'Section : ${widget.section}',
                 style: const TextStyle(
                   fontFamily: 'sedan',
                   fontSize: 16,
@@ -100,16 +100,16 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               const SizedBox(height: 5.0),
             if (_isReserved || // Show details even if reserved but empty
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               Text(
-                'Batch/Year: ${widget.batch}',
+                'Batch/Year : ${widget.batch}',
                 style: const TextStyle(
                   fontFamily: 'sedan',
                   fontSize: 16,
@@ -119,15 +119,15 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               const SizedBox(height: 5.0),
             if (_isReserved || // Show details even if reserved but empty
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
-                widget.announcement.isNotEmpty)
+                widget.department.isNotEmpty)
               Text(
-                'Announcement: ${widget.announcement}',
+                'Department : ${widget.department}',
                 style: const TextStyle(
                   fontFamily: 'sedan',
                   fontSize: 16,
@@ -137,7 +137,7 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.courseName.isEmpty &&
                 widget.roomNumber.isEmpty &&
                 widget.section.isEmpty &&
-                widget.announcement.isEmpty)
+                widget.department.isEmpty)
               const Center(
                 child: Text(
                   'No announcement today',

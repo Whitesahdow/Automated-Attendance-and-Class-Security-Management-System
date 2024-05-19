@@ -3,23 +3,23 @@ class SessionData {
   String? roomNumber;
   String? section;
   String? batch;
-  String? announcement;
+  String? department;
 
   SessionData({
     this.courseName,
     this.roomNumber,
     this.section,
     this.batch,
-    this.announcement,
+    this.department,
   });
 }
 ///////////////////////////////////////////////////////////////
 
 class Menu_list {
-  final String? course_name;
-  final String? Room_number;
-  final String? Section;
-  final String? Batch_No;
+  late String? course_name;
+  late String? Room_number;
+  late String? Section;
+  late String? Batch_No;
 
   Menu_list({
     this.course_name,
@@ -28,4 +28,36 @@ class Menu_list {
     this.Batch_No,
   });
 }
+
 ///////////////////////////////////////////////////////////
+class InstInfo {
+  final String? id_key;
+
+  InstInfo({
+    this.id_key,
+  });
+}
+
+class ScnLists {
+  final String section;
+
+  ScnLists({
+    required this.section,
+  });
+}
+
+class DeptList {
+  final String department_name;
+
+  DeptList({
+    required this.department_name,
+  });
+}
+
+class BatchList {
+  final String batch_number;
+
+  BatchList({
+    required this.batch_number,
+  });
+}
