@@ -7,6 +7,7 @@ class BookedSessionPage extends StatefulWidget {
   final String section;
   final String batch;
   final String department;
+  final String time;
 
   const BookedSessionPage({
     super.key,
@@ -15,6 +16,7 @@ class BookedSessionPage extends StatefulWidget {
     required this.section,
     required this.batch,
     required this.department,
+    required this.time,
   });
 
   @override
@@ -47,7 +49,8 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               Text(
                 'Course Name : ${widget.courseName}',
                 style: const TextStyle(
@@ -60,14 +63,16 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               const SizedBox(height: 5.0),
             if (_isReserved || // Show details even if reserved but empty
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               Text(
                 'Room Number : ${widget.roomNumber}',
                 style: const TextStyle(
@@ -80,14 +85,16 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               const SizedBox(height: 5.0),
             if (_isReserved || // Show details even if reserved but empty
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               Text(
                 'Section : ${widget.section}',
                 style: const TextStyle(
@@ -100,14 +107,16 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               const SizedBox(height: 5.0),
             if (_isReserved || // Show details even if reserved but empty
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
                 widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               Text(
                 'Batch/Year : ${widget.batch}',
                 style: const TextStyle(
@@ -119,13 +128,15 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               const SizedBox(height: 5.0),
             if (_isReserved || // Show details even if reserved but empty
                 widget.courseName.isNotEmpty ||
                 widget.roomNumber.isNotEmpty ||
                 widget.section.isNotEmpty ||
-                widget.department.isNotEmpty)
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
               Text(
                 'Department : ${widget.department}',
                 style: const TextStyle(
@@ -133,11 +144,25 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                   fontSize: 16,
                 ),
               ),
+            if (_isReserved || // Show details even if reserved but empty
+                widget.courseName.isNotEmpty ||
+                widget.roomNumber.isNotEmpty ||
+                widget.section.isNotEmpty ||
+                widget.department.isNotEmpty ||
+                widget.time.isNotEmpty)
+              Text(
+                'Time : in ${widget.time} minutes',
+                style: const TextStyle(
+                  fontFamily: 'sedan',
+                  fontSize: 19,
+                ),
+              ),
             if (!_isReserved && // Show "No announcement today" for cancellations or empty data
                 widget.courseName.isEmpty &&
                 widget.roomNumber.isEmpty &&
                 widget.section.isEmpty &&
-                widget.department.isEmpty)
+                widget.department.isEmpty &&
+                widget.time.isEmpty)
               const Center(
                 child: Text(
                   'No announcement today',

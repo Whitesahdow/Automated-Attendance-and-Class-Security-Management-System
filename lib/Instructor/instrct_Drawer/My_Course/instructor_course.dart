@@ -1,31 +1,30 @@
+// ignore_for_file: unused_import, must_be_immutable, camel_case_types, non_constant_identifier_names, unnecessary_brace_in_string_interps
+
 import 'dart:convert';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/inst_detail.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instr_course.dart';
 import 'package:AAMCS_App/Student/My_Course/course_detail.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class Instructor_course extends StatefulWidget {
-  final String? My_Token;
-
-  Instructor_course(this.My_Token, {super.key});
-
-  @override
-  State<Instructor_course> createState() => _Instructor_courseState();
-}
-
-class _Instructor_courseState extends State<Instructor_course> {
+class Instructor_course extends StatelessWidget {
   List<Instructor_Courses> course_list = [];
+  final String? My_Token;
+  // final String? InstructorCourses;
+
+  Instructor_course(this.My_Token,
+      // this.InstructorCourses ,
+      {super.key});
 
   Future<List<Instructor_Courses>> getCourse() async {
     final response = await http.get(
       Uri.parse("https://besufikadyilma.tech/instructor/my-courses"),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${widget.My_Token}"
+        "Authorization": "Bearer ${My_Token}"
       },
     );
-    print("......................\n${widget.My_Token}");
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 
@@ -44,7 +43,7 @@ class _Instructor_courseState extends State<Instructor_course> {
       return course_list;
     } else {
       // Handle error here
-      throw Exception('Failed to load items');
+      throw Exception('Failed to load teams');
     }
   }
 
@@ -95,9 +94,10 @@ class _Instructor_courseState extends State<Instructor_course> {
                           // when the list is tapped it will open a page
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CourseDetails(
-                                courseName: snapshot.data![index]
-                                    .course_name), //for now it openes only mobile dev.t page
+                            builder: (context) => InstructorCourseDetail(
+                                My_Token,
+                                snapshot.data![index]
+                                    .id), //for now it openes only mobile dev.t page
                           ),
                         ),
                       ),
