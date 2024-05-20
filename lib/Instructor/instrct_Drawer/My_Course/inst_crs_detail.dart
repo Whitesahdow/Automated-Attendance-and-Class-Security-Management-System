@@ -2,34 +2,11 @@
 
 import 'dart:convert';
 // import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instr_course.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/crs_dtls_list.dart';
+// import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instructor_attendance.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/student_attendance/student_attendance.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-class InstCrssDetails {
-  final String? course_category;
-  final String? course_code;
-  final String? course_credit;
-  final String? course_department;
-  final String? course_name;
-  final String? id;
-
-  InstCrssDetails({
-    required this.course_category,
-    required this.course_code,
-    required this.course_credit,
-    required this.course_department,
-    required this.course_name,
-    required this.id,
-  });
-}
-
-class courseinfo {
-  final String id_key;
-
-  courseinfo({
-    required this.id_key,
-  });
-}
 
 class InstructorCourseDetail extends StatefulWidget {
   final String? My_Token;
@@ -109,6 +86,25 @@ class _InstructorCourseDetailState extends State<InstructorCourseDetail> {
                       'course_department: ${snapshot.data!.course_department}'),
                   Text('course_credit: ${snapshot.data!.course_credit} '),
                   Text('Id key: ${snapshot.data!.id} '),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StuAttendance(widget.My_Token, widget.id)
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Student Attendance',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'Lobster',
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             );

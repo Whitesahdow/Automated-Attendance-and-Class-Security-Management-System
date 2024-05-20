@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'package:AAMCS_App/Login_out/logout.dart';
 import 'package:AAMCS_App/Student/My_Course/student_course.dart';
@@ -8,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
+// import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
 
 class StudentHome extends StatefulWidget {
   final String? My_Token;
@@ -36,7 +38,6 @@ class _StudentPageState extends State<StudentHome> {
     super.initState();
     // print(
     //     'My_Token received in StudentHome: ${auth_controller.reuest_responese.token}');
-    AuthController auth_controller = AuthController();
 
     _userDataFuture = getdata();
   }
@@ -249,9 +250,10 @@ class _StudentPageState extends State<StudentHome> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => MyCourses()),
+                    MaterialPageRoute(
+                        builder: (context) => Student_Course(
+                            widget.My_Token, snapshot.data!.id_key)),
                   );
-                  print('My Courses button pressed!');
                 },
               ),
               ListTile(
@@ -285,7 +287,6 @@ class _StudentPageState extends State<StudentHome> {
                       ),
                     ),
                   );
-                  print('Announcements button pressed!');
                 },
               ),
               ListTile(
@@ -313,7 +314,6 @@ class _StudentPageState extends State<StudentHome> {
                       builder: (context) => StudentProfile(widget.My_Token),
                     ),
                   );
-                  print('Profile button pressed!');
                 },
               ),
               ListTile(
@@ -343,7 +343,6 @@ class _StudentPageState extends State<StudentHome> {
                         builder: (context) =>
                             LogoutPage(widget.My_Token, usertype)),
                   );
-                  print('Logout button pressed!');
                 },
               ),
             ],

@@ -1,42 +1,58 @@
+// ignore_for_file: unused_import, must_be_immutable, camel_case_types, non_constant_identifier_names, unnecessary_brace_in_string_interps
+
 import 'dart:convert';
 import 'package:AAMCS_App/Student/My_Course/course_detail.dart';
-import 'package:AAMCS_App/Student/My_Course/stu_course.dart';
+import 'package:AAMCS_App/Student/My_Course/course_list.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class MyCourses extends StatelessWidget {
+class Student_Course extends StatelessWidget {
   List<Student_Courses> course_list = [];
-
-  MyCourses(
-      {super.key}); // a list of data type stu_course its the class i made in sru_course file
+  final String? My_Token;
+  final String id;
+  Student_Course(this.My_Token, this.id, {super.key});
 
   Future<List<Student_Courses>> getCourse() async {
-    var url = Uri.https('reqres.in', '/api/unknown');
-
-    var response = await http.get(
-      url,
-      // headers: {
-      //   'Authorization': 'Bearer $apiKey',
-      // },
+    String url_base =
+        "https://besufikadyilma.tech/instructor/get-class?student_id=";
+    String url_id = id;
+    print(".............................${id}");
+    String url_final = url_base + url_id;
+    print(".............................${url_final}");
+    final response = await http.get(
+      Uri.parse(url_final),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${My_Token}"
+      },
     );
-
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
-
-      for (var eachTeam in jsonData['data']) {
-        final crsList = Student_Courses(
-          name: eachTeam['name'],
-          pantone_value: eachTeam['pantone_value'],
-        );
-        course_list.add(crsList);
-        // an object was created called student_courses and in the object is a list
-        // course_list is now a list which contains objects defined with different parameters
+      print(".................................${jsonData[0]["courses"]} ....");
+      print(jsonData.length);
+      for (var i = 0; i < jsonData.length; i++) {
+        if (jsonData[i]['courses'] != null &&
+            jsonData[i]['courses'].length > 0) {
+          for (var eachTeam in jsonData[i]["courses"]) {
+            // print(eachTeam);
+            final crsList = Student_Courses(
+              course_category: eachTeam['category'].toString(),
+              course_code: eachTeam['course_code'].toString(),
+              course_credit: eachTeam['credit'].toString(),
+              course_department: eachTeam['course_department'].toString(),
+              course_name: eachTeam['name'].toString(),
+              id: eachTeam['id'].toString(),
+            );
+            course_list.add(crsList);
+          }
+        } else {
+          print("sdfghjklkjhgfdfghj2345678........................");
+        }
       }
-
       return course_list;
     } else {
       // Handle error here
-      throw Exception('Failed to load ');
+      throw Exception('Failed to load teams');
     }
   }
 
@@ -80,16 +96,15 @@ class MyCourses extends StatelessWidget {
                       ),
                       child: ListTile(
                         // it returns a list with padding of the fetched data
-                        title: Text(snapshot.data![index].name),
-                        subtitle: Text(snapshot.data![index].pantone_value),
+                        title: Text(snapshot.data![index].course_name),
+                        subtitle: Text(
+                            "Credit Hours: ${snapshot.data![index].course_credit}"),
                         onTap: () => Navigator.push(
                           // when the list is tapped it will open a page
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CourseDetails(
-                                courseName:
-                                    'Mobile App Development'), //for now it openes only mobile dev.t page
-                          ),
+                              builder: (context) => StudentCourseDetail(My_Token, snapshot.data![index].id)//for now it openes only mobile dev.t page
+                              ),
                         ),
                       ),
                     ),

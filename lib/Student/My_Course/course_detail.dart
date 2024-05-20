@@ -1,7 +1,11 @@
+// ignore_for_file: unused_local_variable, library_private_types_in_public_api, non_constant_identifier_names
+
+import 'dart:convert';
 import 'dart:math';
-import 'package:flutter/material.dart';
+import 'package:AAMCS_App/Student/My_Course/course_list.dart';
 import 'package:AAMCS_App/Student/My_Course/student_attendance.dart';
-import 'package:url_launcher/url_launcher_string.dart'; // Import url_launcher package
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 List<AttendanceRecord> attendanceRecords = [];
 List<AttendanceRecord> attendanceLoop() {
@@ -31,116 +35,112 @@ List<AttendanceRecord> attendanceLoop() {
   return attendanceRecords;
 }
 
-// ignore: must_be_immutable
-class CourseDetails extends StatelessWidget {
-  final String courseName;
-  CourseDetails({super.key, required this.courseName});
+class StudentCourseDetail extends StatefulWidget {
+  final String? My_Token;
+  final String id;
+  StudentCourseDetail(this.My_Token, this.id, {super.key});
+
+  @override
+  State<StudentCourseDetail> createState() => _InstructorCourseDetailState();
+}
+
+class _InstructorCourseDetailState extends State<StudentCourseDetail> {
+  late Future<StuCrssDetails> _dataFuture;
   List<AttendanceRecord> attendanceRecord = attendanceLoop();
-  void launchPdf() async {
-    if (!await canLaunchUrlString(
-        'https://drive.google.com/file/d/17w_klSUok6w2OtuPFUz8shuWnRC_aiUh/view?usp=sharing')) {
-      throw 'Could not launch PDF';
+
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = getdata();
+  }
+
+  Future<StuCrssDetails> getdata() async {
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/course/getid/${widget.id}"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${widget.My_Token}"
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(data);
+      final courseDetails = StuCrssDetails(
+        course_category: data['course_category'],
+        course_code: data['course_code'],
+        course_credit: data['course_credit'],
+        course_department: data['course_department'],
+        course_name: data['course_name'],
+        id: data['id'],
+      );
+      return courseDetails;
+    } else {
+      throw Exception('Failed to load data');
     }
-    await launchUrlString(
-        'https://drive.google.com/file/d/17w_klSUok6w2OtuPFUz8shuWnRC_aiUh/view?usp=sharing');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          courseName,
-          style: const TextStyle(
-              fontFamily: 'Sedan', fontSize: 22, fontWeight: FontWeight.bold),
+        title: const Text(
+          'Course Detail',
+          style: TextStyle(
+            fontFamily: 'Sedan',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        backgroundColor: const Color.fromARGB(255, 170, 163, 163),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Center(
-              child: Text(
-                'Course Details',
-                style: TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            Text(
-              'Course Name: $courseName',
-              style: const TextStyle(
-                  fontFamily: 'Sedan',
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal),
-            ),
-            const SizedBox(height: 5.0),
-            const Text(
-              'Course Code: CSCE320',
-              style: TextStyle(
-                  fontFamily: 'Sedan',
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal),
-            ), // Replace with actual course code
-            const SizedBox(height: 5.0),
-            const Text('Credit Hours: 3',
-                style: TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight:
-                        FontWeight.normal)), // Replace with actual credit hours
-            const SizedBox(height: 5.0),
-            const Text('Category: Computer Science',
-                style: TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight:
-                        FontWeight.normal)), // Replace with actual category
-            const SizedBox(height: 5.0),
-            const Text('Instructor Name: Prof. John Doe',
-                style: TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight
-                        .normal)), // Replace with actual instructor name
-            const Divider(thickness: 1.0),
-            const Text('Attendance:',
-                style: TextStyle(
-                    fontFamily: 'Sedan',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10.0),
-            TextButton(
-              onPressed: () {
-                // Navigate to the attendance details page
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AttendanceList(
-                        attendanceRecords: attendanceRecord,
+      body: FutureBuilder<StuCrssDetails>(
+        future: _dataFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Error: Cant find anything'));
+          } else {
+            final courseDetails = snapshot.data!;
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('course_code: ${snapshot.data!.course_code}'),
+                  Text('course_name: ${snapshot.data!.course_name}'),
+                  Text('course_category: ${snapshot.data!.course_category}} '),
+                  Text(
+                      'course_department: ${snapshot.data!.course_department}'),
+                  Text('course_credit: ${snapshot.data!.course_credit} '),
+                  Text('Id key: ${snapshot.data!.id} '),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AttendanceList(
+                              attendanceRecords: attendanceRecord,
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'My Attendance',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'sedan',
+                        ),
                       ),
-                    ));
-              },
-              child: const Text('View Attendance Details',
-                  style: TextStyle(
-                      fontFamily: 'Sedan',
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      fontStyle: FontStyle.italic)),
-            ),
-            const SizedBox(height: 10.0),
-            // TextButton.icon(
-            //   onPressed: () => launchPdf(), // Call the launchPdf method
-            //   icon: const Icon(Icons.picture_as_pdf),
-            //   label: const Text('View Course Outline (.pdf)'),
-            // ),
-          ],
-        ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
       ),
     );
   }
 }
-// This is a placeholder class for your attendance details page

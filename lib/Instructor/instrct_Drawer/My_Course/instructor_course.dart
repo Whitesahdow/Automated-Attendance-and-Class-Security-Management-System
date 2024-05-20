@@ -1,8 +1,9 @@
 // ignore_for_file: unused_import, must_be_immutable, camel_case_types, non_constant_identifier_names, unnecessary_brace_in_string_interps
 
 import 'dart:convert';
-import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/inst_detail.dart';
-import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instr_course.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/crs_dtls_list.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/inst_crs_detail.dart';
+// flutter build appbundle --releaseimport 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/crs_details_lists.dart';
 import 'package:AAMCS_App/Student/My_Course/course_detail.dart';
 
 import 'package:flutter/material.dart';
@@ -11,11 +12,8 @@ import 'package:http/http.dart' as http;
 class Instructor_course extends StatelessWidget {
   List<Instructor_Courses> course_list = [];
   final String? My_Token;
-  // final String? InstructorCourses;
 
-  Instructor_course(this.My_Token,
-      // this.InstructorCourses ,
-      {super.key});
+  Instructor_course(this.My_Token, {super.key});
 
   Future<List<Instructor_Courses>> getCourse() async {
     final response = await http.get(
@@ -27,7 +25,7 @@ class Instructor_course extends StatelessWidget {
     );
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
-
+      print(jsonData);
       for (var eachTeam in jsonData) {
         final crsList = Instructor_Courses(
           course_category: eachTeam['course_category'],

@@ -134,8 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   var token = await auth_controller.loginuser(userType);
                   if (auth_controller.reuest_responese.loginArr == "true") {
-                    print(
-                        " in the if statementtttttttttttttttttttttttttttttttttttttttttttttttttt ${token}");
+                    //print(" in the if statementtttttttttttttttttttttttttttttttttttttttttttttttttt ${token}");
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(

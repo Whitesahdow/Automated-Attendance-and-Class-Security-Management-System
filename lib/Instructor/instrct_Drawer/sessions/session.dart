@@ -103,7 +103,7 @@ class _SessionState extends State<Session> {
 
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
-        print(jsonData.toString());
+
         setState(() {
           roomnumber =
               jsonData.map((element) => element['room'] as String).toList();
