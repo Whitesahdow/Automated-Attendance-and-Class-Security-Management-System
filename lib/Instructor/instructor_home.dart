@@ -68,6 +68,8 @@ class _StudentPageState extends State<InstructorHome> {
     return Scaffold(
       key: _scaffoldKey, // Assign key to Scaffold
       appBar: AppBar(
+        shadowColor: const Color.fromARGB(255, 20, 19, 18),
+        elevation: 2,
         title: const Text(
           'Instructor Home Page ', // Use retrieved student name
           style: TextStyle(
@@ -94,6 +96,7 @@ class _StudentPageState extends State<InstructorHome> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        SizedBox(height: 8),
                         Text(
                           'Welcome, ${snapshot.data!.first_name} ${snapshot.data!.middle_name}!',
                           style: const TextStyle(

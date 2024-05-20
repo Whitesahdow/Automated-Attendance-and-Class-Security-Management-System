@@ -1,52 +1,24 @@
 // ignore_for_file: unused_local_variable, library_private_types_in_public_api, non_constant_identifier_names
 
 import 'dart:convert';
-import 'dart:math';
-import 'package:AAMCS_App/Student/My_Course/course_list.dart';
-import 'package:AAMCS_App/Student/My_Course/student_attendance.dart';
+// import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instr_course.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/crs_dtls_list.dart';
+// import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instructor_attendance.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/student_attendance/student_attendance.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-List<AttendanceRecord> attendanceRecords = [];
-List<AttendanceRecord> attendanceLoop() {
-  for (int i = 1; i <= 10; i++) {
-    // Generate random date and status for each record
-    final date = DateTime.now().subtract(Duration(days: i));
-
-    final status = Random().nextBool()
-        ? AttendanceStatus.present
-        : AttendanceStatus.absent;
-    String? clockIn;
-    String? clockOut;
-    if (status == AttendanceStatus.present) {
-      // Generate random clock in/out times (assuming 8-hour workday)
-      final hourIn = Random().nextInt(9) + 8;
-      final minuteIn = Random().nextInt(60);
-      final hourOut =
-          hourIn + (Random().nextInt(3) + 1); // Between 1-3 hours later
-      final minuteOut = minuteIn;
-      clockIn =
-          "${hourIn.toString().padLeft(2, '0')}:${minuteIn.toString().padLeft(2, '0')}";
-      clockOut =
-          "${hourOut.toString().padLeft(2, '0')}:${minuteOut.toString().padLeft(2, '0')}";
-    }
-    attendanceRecords.add(AttendanceRecord(date, status, clockIn, clockOut));
-  }
-  return attendanceRecords;
-}
-
-class StudentCourseDetail extends StatefulWidget {
+class InstructorCourseDetail extends StatefulWidget {
   final String? My_Token;
   final String id;
-  StudentCourseDetail(this.My_Token, this.id, {super.key});
+  const InstructorCourseDetail(this.My_Token, this.id, {super.key});
 
   @override
-  State<StudentCourseDetail> createState() => _InstructorCourseDetailState();
+  State<InstructorCourseDetail> createState() => _InstructorCourseDetailState();
 }
 
-class _InstructorCourseDetailState extends State<StudentCourseDetail> {
-  late Future<StuCrssDetails> _dataFuture;
-  List<AttendanceRecord> attendanceRecord = attendanceLoop();
+class _InstructorCourseDetailState extends State<InstructorCourseDetail> {
+  late Future<InstCrssDetails> _dataFuture;
 
   @override
   void initState() {
@@ -54,7 +26,7 @@ class _InstructorCourseDetailState extends State<StudentCourseDetail> {
     _dataFuture = getdata();
   }
 
-  Future<StuCrssDetails> getdata() async {
+  Future<InstCrssDetails> getdata() async {
     final response = await http.get(
       Uri.parse("https://besufikadyilma.tech/course/getid/${widget.id}"),
       headers: {
@@ -66,7 +38,7 @@ class _InstructorCourseDetailState extends State<StudentCourseDetail> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       print(data);
-      final courseDetails = StuCrssDetails(
+      final courseDetails = InstCrssDetails(
         course_category: data['course_category'],
         course_code: data['course_code'],
         course_credit: data['course_credit'],
@@ -94,7 +66,7 @@ class _InstructorCourseDetailState extends State<StudentCourseDetail> {
         ),
         backgroundColor: const Color.fromARGB(255, 170, 163, 163),
       ),
-      body: FutureBuilder<StuCrssDetails>(
+      body: FutureBuilder<InstCrssDetails>(
         future: _dataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -120,17 +92,15 @@ class _InstructorCourseDetailState extends State<StudentCourseDetail> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AttendanceList(
-                              attendanceRecords: attendanceRecord,
-                            ),
+                            builder: (context) => StuAttendance(widget.My_Token, widget.id)
                           ),
                         );
                       },
                       child: const Text(
-                        'My Attendance',
+                        'Student Attendance',
                         style: TextStyle(
                           color: Colors.black,
-                          fontFamily: 'sedan',
+                          fontFamily: 'Lobster',
                         ),
                       ),
                     ),
