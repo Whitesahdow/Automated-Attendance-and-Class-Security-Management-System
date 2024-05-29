@@ -282,8 +282,7 @@ class _StudentPageState extends State<StudentHome> {
                       builder: (context) => const Announcement(
                         courseName: "course name goes here",
                         roomNumber: "roomNumber goes here",
-                        isCancelled: true,
-                        announcement: "announcement goes here",
+                        start_time: '',
                       ),
                     ),
                   );

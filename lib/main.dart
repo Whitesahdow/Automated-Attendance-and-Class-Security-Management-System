@@ -3,4 +3,5 @@ import 'package:AAMCS_App/front.dart';
 
 void main() => runApp(const MaterialApp(
       home: Frontpage(),
+      debugShowCheckedModeBanner: false,
     ));

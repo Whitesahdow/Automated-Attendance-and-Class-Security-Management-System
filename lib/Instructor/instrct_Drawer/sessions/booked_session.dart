@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/started_class.dart';
+import 'package:AAMCS_App/Instructor/instructor_home.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For HapticFeedback
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // For HapticFeedback
+import 'package:http/http.dart' as http;
 
 class BookedSessionPage extends StatefulWidget {
   final String courseName;
@@ -8,16 +14,21 @@ class BookedSessionPage extends StatefulWidget {
   final String batch;
   final String department;
   final String time;
+  final String? My_tokens;
+  final String? course_ID;
+  final String? instructor_id;
 
-  const BookedSessionPage({
-    super.key,
-    required this.courseName,
-    required this.roomNumber,
-    required this.section,
-    required this.batch,
-    required this.department,
-    required this.time,
-  });
+  const BookedSessionPage(
+      {super.key,
+      required this.courseName,
+      required this.roomNumber,
+      required this.section,
+      required this.batch,
+      required this.department,
+      required this.time,
+      this.My_tokens,
+      this.course_ID,
+      this.instructor_id});
 
   @override
   State<BookedSessionPage> createState() => _BookedSessionPageState();
@@ -25,6 +36,13 @@ class BookedSessionPage extends StatefulWidget {
 
 class _BookedSessionPageState extends State<BookedSessionPage> {
   bool _isReserved = true; // Flag to track reservation status
+  @override
+  void initState() {
+    super.initState();
+    // Perform any initialization tasks here
+    print('BookedSessionPage initialized');
+    //getStoredCourseID(); // For example, retrieve stored course ID
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,17 +197,70 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 if (_isReserved)
                   ElevatedButton(
                     onPressed: () {
+                      Delete_session(widget.My_tokens);
                       setState(() => _isReserved = false);
+                      Navigator.pop(context);
+                      print('Cancel button pressed!');
                       // Simulate haptic feedback on cancellation
                       HapticFeedback.vibrate();
                     },
                     child: const Text('Cancel'),
                   ),
+                ElevatedButton(
+                  onPressed: () {
+                    print(widget.instructor_id);
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Started_Class(
+                                widget.My_tokens, widget.course_ID)));
+                    print('Started button pressed!');
+                  },
+                  child: const Text('Started class'),
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+// Future<String?> getStoredCourseID() async {
+//   SharedPreferences prefs = await SharedPreferences.getInstance();
+//   // Retrieve the stored value, default to null if the placeholder is found
+//   sessionCheck.courseID = prefs.getString('selectedCourseID');
+//   return sessionCheck.courseID;
+// }
+
+Future<String?> Delete_session(String? Mytoken) async {
+  const url_base = "https://besufikadyilma.tech/instructor/auth/delete-session";
+
+  try {
+    var response = await http.delete(
+      Uri.parse(url_base),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${Mytoken}"
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var delete_status = jsonDecode(response.body);
+
+      var delete_resonse = delete_status['msg'].toString();
+      print(
+          "................ delete is runing........................................$delete_resonse");
+
+      return delete_resonse;
+    } else {
+      print("Error : ${response.body}");
+      return null;
+    }
+  } catch (e) {
+    print("Error: $e");
+    return null;
   }
 }

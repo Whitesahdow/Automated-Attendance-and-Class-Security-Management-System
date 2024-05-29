@@ -6,12 +6,13 @@ import 'package:http/http.dart' as http;
 class StudentProfile extends StatefulWidget {
   final String? My_Token;
   const StudentProfile(this.My_Token, {super.key});
+
   @override
   _StudentProfileState createState() => _StudentProfileState();
 }
 
 class _StudentProfileState extends State<StudentProfile> {
-  late Future<Student_info> _dataFuture;
+  late Future<StudentInfo> _dataFuture;
 
   @override
   void initState() {
@@ -19,9 +20,7 @@ class _StudentProfileState extends State<StudentProfile> {
     _dataFuture = getdata();
   }
 
-  Future<Student_info> getdata() async {
-    // print(auth_controller.loginArr.toString());
-
+  Future<StudentInfo> getdata() async {
     final response = await http.get(
       Uri.parse("https://besufikadyilma.tech/student/me"),
       headers: {
@@ -32,7 +31,7 @@ class _StudentProfileState extends State<StudentProfile> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final user = Student_info(
+      final user = StudentInfo(
         first_name: data['first_name'],
         middle_name: data['middle_name'],
         last_name: data['last_name'],
@@ -44,11 +43,40 @@ class _StudentProfileState extends State<StudentProfile> {
         id: data['student_id'].toString(),
         id_key: data['id'],
       );
-      print(data);
       return user;
     } else {
       throw Exception('Failed to load data');
     }
+  }
+
+  Future<void> _refreshData() async {
+    try {
+      final newData = getdata();
+      setState(() {
+        _dataFuture = newData;
+      });
+      await newData;
+    } catch (e) {
+      print('Error refreshing data: $e');
+    }
+  }
+
+  Widget buildProfileCard(String title, String content, IconData icon) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.blueAccent),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(content),
+      ),
+    );
   }
 
   @override
@@ -56,44 +84,93 @@ class _StudentProfileState extends State<StudentProfile> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Profile',
+          'Student Profile',
           style: TextStyle(
             fontFamily: 'Sedan',
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 170, 163, 163),
+        backgroundColor: Color.fromARGB(81, 3, 57, 150),
+        elevation: 2.0,
+        shadowColor: Colors.black54,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: FutureBuilder<Student_info>(
-        future: _dataFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(
-                child:
-                    Text('Error: Cant find anything.......................'));
-          } else {
-            final user = snapshot.data!;
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: FutureBuilder<StudentInfo>(
+          future: _dataFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return ListView(
                 children: [
-                  Text(
-                      'Name: ${user.first_name} ${user.middle_name} ${user.last_name}'),
-                  Text('Email: ${user.email}'),
-                  Text('Student Id: ${user.id} '),
-                  Text('Department: ${user.department}'),
-                  Text('gender: ${user.gender} '),
-                  Text('Batch section: ${user.batch} ${user.section}'),
-                  Text('Id key: ${user.id_key} '),
+                  const SizedBox(height: 20),
+                  const Center(child: Text('Error: Cannot find anything')),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _refreshData,
+                      child: const Text('Retry'),
+                    ),
+                  ),
                 ],
-              ),
-            );
-          }
-        },
+              );
+            } else {
+              final user = snapshot.data!;
+              return ListView(
+                padding: const EdgeInsets.all(8.0),
+                children: [
+                  const SizedBox(height: 20),
+                  buildProfileCard(
+                      'Name',
+                      '${user.first_name} ${user.middle_name} ${user.last_name}',
+                      Icons.person),
+                  buildProfileCard('Email', user.email, Icons.email),
+                  buildProfileCard('Student Id', user.id, Icons.badge),
+                  buildProfileCard(
+                      'Department', user.department, Icons.business),
+                  buildProfileCard('Gender', user.gender, Icons.person_outline),
+                  buildProfileCard('Batch', user.batch, Icons.school),
+                  buildProfileCard('Section', user.section, Icons.class_),
+                ],
+              );
+            }
+          },
+        ),
       ),
     );
   }
+}
+
+class StudentInfo {
+  final String first_name;
+  final String middle_name;
+  final String last_name;
+  final String email;
+  final String department;
+  final String gender;
+  final String batch;
+  final String section;
+  final String id;
+  final String id_key;
+
+  StudentInfo({
+    required this.first_name,
+    required this.middle_name,
+    required this.last_name,
+    required this.email,
+    required this.department,
+    required this.gender,
+    required this.batch,
+    required this.section,
+    required this.id,
+    required this.id_key,
+  });
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'booked_session.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Session extends StatefulWidget {
   final String? myToken;
@@ -22,7 +23,7 @@ class _SessionState extends State<Session> {
   String? _selectedDepartment;
   String? _selectedBatch;
   String? _selectedtime;
-  SessionData sessionData = SessionData();
+  SessionData sessionData = SessionData(studentIds: []);
   List roomnumber = [];
   List roomID = [];
   List<dynamic> sectionList = [];
@@ -30,8 +31,9 @@ class _SessionState extends State<Session> {
   List<dynamic> department_list = [];
   List<dynamic> batch_No = [];
   static const List<String> _time = ['12', '11'];
+  String? dialogue_time;
 
-  get time => "";
+  //get time => "";
   @override
   void initState() {
     super.initState();
@@ -315,22 +317,21 @@ class _SessionState extends State<Session> {
         setState(() {
           students_lister =
               (jsonData[0]['students'] as List<dynamic>).map((student) {
+            String studentId = student["id"].toString(); // Extract student ID
+            sessionData.studentIds.add(studentId); // Add student ID to the list
+            print('Student ID...........: ${sessionData.studentIds}');
             return Students_list(
               batch: student["batch"].toString(),
               department: student["department"].toString(),
               email: student["email"].toString(),
               first_name: student["first_name"].toString(),
               gender: student["gender"].toString(),
-              id: student["id"].toString(),
+              id: studentId, // Use the extracted student ID
               last_name: student["last_name"].toString(),
               middle_name: student["middle_name"].toString(),
               section: student["section"].toString(),
             );
           }).toList();
-          students_lister.forEach((student) {
-            sessionData.student_id = student.id;
-            print('Student ID: ${sessionData.student_id}');
-          });
         });
       } else {
         throw Exception('Failed to load courses');
@@ -359,7 +360,7 @@ class _SessionState extends State<Session> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-//#############################################################################################
+//#######################################################################################################
 
             DropdownButtonFormField<String?>(
               isExpanded: true,
@@ -370,12 +371,17 @@ class _SessionState extends State<Session> {
                         child: Text(choice.course_name.toString()),
                       ))
                   .toList(),
-              onChanged: (value) {
+              onChanged: (value) async {
                 setState(() {
                   sessionData.courseName = value;
                   sessionData.courseID = course_dictionary[value];
                   print("Selected Course ID: ${sessionData.courseID}");
                 });
+
+                // Store the selected course ID locally
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setString(
+                    'selectedCourseID', sessionData.courseID ?? '');
               },
               decoration: const InputDecoration(
                 labelText: 'Course Name',
@@ -428,34 +434,7 @@ class _SessionState extends State<Session> {
             ),
             const SizedBox(height: 30),
 
-//#############################################################################################
-
-            DropdownButtonFormField<String>(
-              value: _selectedtime,
-              items: _time
-                  .map((time) => DropdownMenuItem<String>(
-                        value: time,
-                        child: Text("$time min"),
-                      ))
-                  .toList(),
-              onChanged: (value) => setState(() {
-                _selectedtime = value!;
-                sessionData.time = value;
-              }),
-              decoration: const InputDecoration(
-                labelText: 'Time ( minutes)',
-                labelStyle: TextStyle(
-                  fontFamily: 'Sedan',
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-//################################################################
+//###############################################################################################
             DropdownButtonFormField<String>(
               value: _selectedDepartment,
               items: department_list
@@ -540,9 +519,35 @@ class _SessionState extends State<Session> {
             ),
             const SizedBox(height: 30),
 //##############################################################################
+            DropdownButtonFormField<String>(
+              value: _selectedtime,
+              items: _time
+                  .map((time) => DropdownMenuItem<String>(
+                        value: time,
+                        child: Text("$time min"),
+                      ))
+                  .toList(),
+              onChanged: (value) => setState(() {
+                _selectedtime = value!;
+                sessionData.time = value;
+              }),
+              decoration: const InputDecoration(
+                labelText: 'Time ( minutes)',
+                labelStyle: TextStyle(
+                  fontFamily: 'Sedan',
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+//#####################################################################################
             ElevatedButton(
               onPressed: () {
-                _showConfirmationDialog(context);
+                _showConfirmationDialog(context, sessionData.time);
               },
               child: const Text(
                 'Submit',
@@ -559,7 +564,7 @@ class _SessionState extends State<Session> {
     );
   }
 
-  void _showConfirmationDialog(BuildContext context) {
+  void _showConfirmationDialog(BuildContext context, String? dialogue_time) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -572,14 +577,20 @@ class _SessionState extends State<Session> {
             fontStyle: FontStyle.normal,
           ),
         ),
-        content: const Text(
-          'Warning: Once you confirm the session, the room will be reserved for 20 minutes. Failure to unlock it within this time will result in the room becoming available again, and the session will be canceled.',
-          style: TextStyle(
-            fontFamily: 'sedan',
-            fontSize: 17,
-            fontWeight: FontWeight.normal,
-            fontStyle: FontStyle.italic,
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Warning: Once you confirm the session, the room will be reserved for $dialogue_time minutes. Failure to unlock it within this time will result in the room becoming available again, and the session will be canceled.',
+              style: const TextStyle(
+                fontFamily: 'sedan',
+                fontSize: 17,
+                fontWeight: FontWeight.normal,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -589,12 +600,13 @@ class _SessionState extends State<Session> {
           TextButton(
             onPressed: () async {
               await createSession(sessionData.roomID, sessionData.courseID,
-                  [sessionData.student_id], _selectedtime, widget.myToken);
+                  sessionData.studentIds, _selectedtime, widget.myToken);
               if (message.message == true) {
                 print(message.message);
 
-                Navigator.pop(context);
-                Navigator.push(
+                Navigator.pop(
+                    context); // Remove the current page from the stack
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => BookedSessionPage(
@@ -604,11 +616,13 @@ class _SessionState extends State<Session> {
                       batch: sessionData.batch ?? '',
                       department: sessionData.department ?? '',
                       time: sessionData.time ?? '',
+                      My_tokens: widget.myToken,
+                      course_ID: sessionData.courseID,
                     ),
                   ),
                 );
               } else {
-                Navigator.pop(context, false);
+                Navigator.pop(context);
                 _showLoginFailedDialog(context);
               }
             },
@@ -627,24 +641,25 @@ class Sessionresponse {
 
 Sessionresponse message = Sessionresponse();
 
-Future<void> createSession(var roomID, var course_id, List<String> studentsList,
-    var selectedTime, var token) async {
+Future<void> createSession(
+  var roomID,
+  var course_id,
+  List<String> studentsList,
+  var selectedTime,
+  var token,
+  //String studentId, // Add studentId parameter
+) async {
   const urlBase = "https://besufikadyilma.tech/instructor/auth/create-session";
-  // Print values before sending the request
-  // print("Room ID: $roomID");
-  // print("Course ID: $course_id");
-  print(
-      "//////////////////////////////////////////////////////////////////////////////////////////");
-  // print("Start Time: $selectedTime");
-
+  print(studentsList);
   try {
     var response = await http.post(
       Uri.parse(urlBase),
       body: jsonEncode({
         "room_id": roomID,
         "course_id": course_id,
-        "student_list": List<dynamic>.from(studentsList.map((x) => x)),
+        "student_list": studentsList,
         "start_time": selectedTime,
+        // Pass studentId here
       }),
       headers: {
         "Content-Type": "application/json",
@@ -655,8 +670,7 @@ Future<void> createSession(var roomID, var course_id, List<String> studentsList,
     if (response.statusCode == 201) {
       var sessionStatus = jsonDecode(response.body);
       print(sessionStatus['msg']);
-      message.message =
-          sessionStatus['msg']; // Convert string "true" to boolean true
+      message.message = sessionStatus['msg'];
       print("Message status: ${message.message}");
     } else {
       message.message = false;
@@ -683,12 +697,12 @@ void _showLoginFailedDialog(BuildContext context) {
         ),
       ),
       content: const Text(
-        'Room already taken or input values are wrong please try again.',
+        'Input values are wrong please try again.',
         style: TextStyle(
           fontFamily: 'Sedan',
           fontSize: 17,
           fontWeight: FontWeight.normal,
-          fontStyle: FontStyle.italic,
+          // fontStyle: FontStyle.italic,
         ),
       ),
       actions: [
