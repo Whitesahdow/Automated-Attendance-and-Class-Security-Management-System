@@ -1,17 +1,14 @@
-// ignore_for_file: unused_local_variable, library_private_types_in_public_api, non_constant_identifier_names
-
 import 'dart:convert';
-// import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instr_course.dart';
-import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/crs_dtls_list.dart';
-// import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instructor_attendance.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/student_attendance/student_attendance.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class InstructorCourseDetail extends StatefulWidget {
-  final String? My_Token;
+  final String? myToken;
   final String id;
-  const InstructorCourseDetail(this.My_Token, this.id, {super.key});
+
+  const InstructorCourseDetail(this.myToken, this.id, {Key? key})
+      : super(key: key);
 
   @override
   State<InstructorCourseDetail> createState() => _InstructorCourseDetailState();
@@ -31,19 +28,18 @@ class _InstructorCourseDetailState extends State<InstructorCourseDetail> {
       Uri.parse("https://besufikadyilma.tech/course/getid/${widget.id}"),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${widget.My_Token}"
+        "Authorization": "Bearer ${widget.myToken}"
       },
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data);
       final courseDetails = InstCrssDetails(
-        course_category: data['course_category'],
-        course_code: data['course_code'],
-        course_credit: data['course_credit'],
-        course_department: data['course_department'],
-        course_name: data['course_name'],
+        courseCode: data['course_code'],
+        courseName: data['course_name'],
+        courseCategory: data['course_category'],
+        courseDepartment: data['course_department'],
+        courseCredit: data['course_credit'],
         id: data['id'],
       );
       return courseDetails;
@@ -65,42 +61,95 @@ class _InstructorCourseDetailState extends State<InstructorCourseDetail> {
           ),
         ),
         backgroundColor: const Color.fromARGB(255, 170, 163, 163),
+        elevation: 0,
       ),
       body: FutureBuilder<InstCrssDetails>(
         future: _dataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.amber), // Customize the color
+                strokeWidth: 6, // Increase the stroke width
+              ),
+            );
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Error: Cant find anything'));
+            return const Center(child: Text('Error: Cannot find anything'));
           } else {
             final courseDetails = snapshot.data!;
-            return Center(
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('course_code: ${snapshot.data!.course_code}'),
-                  Text('course_name: ${snapshot.data!.course_name}'),
-                  Text('course_category: ${snapshot.data!.course_category}} '),
-                  Text(
-                      'course_department: ${snapshot.data!.course_department}'),
-                  Text('course_credit: ${snapshot.data!.course_credit} '),
-                  Text('Id key: ${snapshot.data!.id} '),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => StuAttendance(widget.My_Token, widget.id)
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Course Code: ${snapshot.data!.courseCode}',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                        );
-                      },
+                          const SizedBox(height: 8),
+                          Text(
+                            'Course Name: ${snapshot.data!.courseName}',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Category: ${snapshot.data!.courseCategory}',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Department: ${snapshot.data!.courseDepartment}',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Credit: ${snapshot.data!.courseCredit}',
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              StuAttendance(widget.myToken, widget.id),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(131, 17, 38, 198),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: Center(
                       child: const Text(
                         'Student Attendance',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Color.fromARGB(255, 239, 235, 235),
                           fontFamily: 'Lobster',
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -113,4 +162,22 @@ class _InstructorCourseDetailState extends State<InstructorCourseDetail> {
       ),
     );
   }
+}
+
+class InstCrssDetails {
+  final String courseCode;
+  final String courseName;
+  final String courseCategory;
+  final String courseDepartment;
+  final String courseCredit;
+  final String id;
+
+  InstCrssDetails({
+    required this.courseCode,
+    required this.courseName,
+    required this.courseCategory,
+    required this.courseDepartment,
+    required this.courseCredit,
+    required this.id,
+  });
 }

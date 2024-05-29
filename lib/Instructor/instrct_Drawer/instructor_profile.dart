@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,7 +11,7 @@ class InstructorProfile extends StatefulWidget {
 }
 
 class _InstructorProfileState extends State<InstructorProfile> {
-  late Future<Instructor_info> _dataFuture;
+  late Future<InstructorInfo> _dataFuture;
 
   @override
   void initState() {
@@ -20,7 +19,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
     _dataFuture = getdata();
   }
 
-  Future<Instructor_info> getdata() async {
+  Future<InstructorInfo> getdata() async {
     final response = await http.get(
       Uri.parse("https://besufikadyilma.tech/instructor/me"),
       headers: {
@@ -31,7 +30,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final user = Instructor_info(
+      final user = InstructorInfo(
         first_name: data['first_name'],
         middle_name: data['middle_name'],
         last_name: data['last_name'],
@@ -61,6 +60,24 @@ class _InstructorProfileState extends State<InstructorProfile> {
     }
   }
 
+  Widget buildProfileCard(String title, String content, IconData icon) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.blueAccent),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(content),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +94,7 @@ class _InstructorProfileState extends State<InstructorProfile> {
       ),
       body: RefreshIndicator(
         onRefresh: _refreshData,
-        child: FutureBuilder<Instructor_info>(
+        child: FutureBuilder<InstructorInfo>(
           future: _dataFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -99,29 +116,20 @@ class _InstructorProfileState extends State<InstructorProfile> {
             } else {
               final user = snapshot.data!;
               return ListView(
+                padding: const EdgeInsets.all(8.0),
                 children: [
-                  ListTile(
-                    title: Text(
-                        'Name: ${user.first_name} ${user.middle_name} ${user.last_name}'),
-                  ),
-                  ListTile(
-                    title: Text('Email: ${user.email}'),
-                  ),
-                  ListTile(
-                    title: Text('Id: ${user.teacher_id}'),
-                  ),
-                  ListTile(
-                    title: Text('Department: ${user.department}'),
-                  ),
-                  ListTile(
-                    title: Text('Gender: ${user.gender}'),
-                  ),
-                  ListTile(
-                    title: Text('Qualification: ${user.qualification}'),
-                  ),
-                  ListTile(
-                    title: Text('Id key: ${user.id_key}'),
-                  ),
+                  const SizedBox(height: 20),
+                  buildProfileCard(
+                      'Name',
+                      '${user.first_name} ${user.middle_name} ${user.last_name}',
+                      Icons.person),
+                  buildProfileCard('Email', user.email, Icons.email),
+                  buildProfileCard('Id', user.teacher_id, Icons.badge),
+                  buildProfileCard(
+                      'Department', user.department, Icons.business),
+                  buildProfileCard('Gender', user.gender, Icons.person_outline),
+                  buildProfileCard(
+                      'Qualification', user.qualification, Icons.school),
                 ],
               );
             }
@@ -130,4 +138,28 @@ class _InstructorProfileState extends State<InstructorProfile> {
       ),
     );
   }
+}
+
+class InstructorInfo {
+  final String first_name;
+  final String middle_name;
+  final String last_name;
+  final String email;
+  final String department;
+  final String gender;
+  final String qualification;
+  final String teacher_id;
+  final String id_key;
+
+  InstructorInfo({
+    required this.first_name,
+    required this.middle_name,
+    required this.last_name,
+    required this.email,
+    required this.department,
+    required this.gender,
+    required this.qualification,
+    required this.teacher_id,
+    required this.id_key,
+  });
 }

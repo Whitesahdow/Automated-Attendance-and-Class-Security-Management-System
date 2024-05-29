@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instructor_course.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/booked_session.dart';
 import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/instructor_profile.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/session.dart';
 // import 'package:AAMCS_App/Student/My_Course/student_course.dart';
 import 'package:AAMCS_App/Login_out/logout.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/sessions_selector.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -26,6 +29,7 @@ class _StudentPageState extends State<InstructorHome> {
   void initState() {
     super.initState();
     _userDataFuture = getdata();
+    getStoredCourseID();
   }
 
   Future<Instructor_info> getdata() async {
@@ -256,12 +260,36 @@ class _StudentPageState extends State<InstructorHome> {
                     ),
                   ],
                 ),
-                onTap: () {
-                  Navigator.push(
+                onTap: () async {
+                  await Session_checker(widget.My_Token);
+
+                  if (sessionCheck.msg == false) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Session(widget.My_Token)));
+                    print(
+                        'Session button pressed! result is.........${sessionCheck.msg}');
+                  } else {
+                    print(
+                        'Session button pressed! course ID is.........${sessionCheck.courseID}');
+                    Navigator.pop(context);
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => Session(widget.My_Token)));
-                  print('Session button pressed!');
+                        builder: (context) => BookedSessionPage(
+                          courseName: sessionCheck.course_name ?? '',
+                          roomNumber: sessionCheck.room ?? '',
+                          section: sessionCheck.section ?? '',
+                          batch: sessionCheck.batch ?? '',
+                          department: sessionCheck.department ?? '',
+                          time: sessionCheck.start_time ?? '',
+                          My_tokens: widget.My_Token,
+                          course_ID: sessionCheck.courseID,
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
               ListTile(
@@ -327,4 +355,39 @@ class _StudentPageState extends State<InstructorHome> {
       ),
     );
   }
+}
+
+Session_Check sessionCheck = Session_Check(msg: false);
+Future<void> Session_checker(String? Token) async {
+  try {
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/instructor/get-session"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $Token"
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var body = jsonDecode(response.body);
+      sessionCheck.msg = body["msg"];
+      if (sessionCheck.msg == true) {
+        sessionCheck.course_name = body["session"]["course_name"];
+        sessionCheck.room = body["session"]["room"];
+        sessionCheck.start_time = body["session"]["start_time"];
+        sessionCheck.Instructor_ID = body["session"]["instructor_id"];
+      }
+    } else {
+      print("Failed to load session data: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Error: $e");
+  }
+}
+
+Future<String?> getStoredCourseID() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // Retrieve the stored value, default to null if the placeholder is found
+  sessionCheck.courseID = prefs.getString('selectedCourseID');
+  return sessionCheck.courseID;
 }

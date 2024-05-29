@@ -5,7 +5,7 @@ class SessionData {
   String? batch;
   String? department;
   String? time;
-  var student_id;
+  List<String> studentIds = []; // Change to list
   String? courseID;
   String? roomID;
 
@@ -16,11 +16,12 @@ class SessionData {
     this.batch,
     this.department,
     this.time,
-    this.student_id,
+    required this.studentIds, // Update constructor parameter
     this.courseID,
     this.roomID,
   });
 }
+
 ///////////////////////////////////////////////////////////////
 
 class Menu_list {
@@ -70,6 +71,7 @@ class BatchList {
   });
 }
 
+////////////////////////////////////////////////////////////////////////////
 class Students_list {
   String batch;
   String department;
@@ -97,4 +99,33 @@ class Students_list {
         'first_name: $first_name, gender: $gender, id: $id, last_name: $last_name, '
         'middle_name: $middle_name, section: $section)';
   }
+}
+///////////////////////////////////////////////////////////////////////////////
+
+class Session_Check {
+  String? course_name;
+  String? room;
+  String? start_time;
+  String? batch;
+  String? section;
+  String? department;
+  String? time;
+  var student_id;
+  String? courseID;
+  bool msg;
+  String? Instructor_ID;
+
+  Session_Check({
+    this.course_name,
+    this.room,
+    this.start_time,
+    this.section,
+    this.batch,
+    this.department,
+    this.time,
+    this.student_id,
+    this.courseID,
+    required this.msg,
+    this.Instructor_ID,
+  });
 }

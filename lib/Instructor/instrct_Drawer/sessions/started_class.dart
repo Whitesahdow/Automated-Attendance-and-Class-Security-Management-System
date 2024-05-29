@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
-class StuAttendance extends StatefulWidget {
+class Started_Class extends StatefulWidget {
   final String? myToken;
   final String? id;
-  const StuAttendance(this.myToken, this.id, {super.key});
+  const Started_Class(this.myToken, this.id, {super.key});
 
   @override
-  State<StuAttendance> createState() => _StuAttendanceState();
+  State<Started_Class> createState() => _StuAttendanceState();
 }
 
-class _StuAttendanceState extends State<StuAttendance> {
+class _StuAttendanceState extends State<Started_Class> {
   List<stuList> studentList = [];
   // List<stuList> filteredList = []; // List for search results
   bool isLoading = false; // Flag to indicate data fetching state
@@ -34,7 +34,7 @@ class _StuAttendanceState extends State<StuAttendance> {
     );
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
-      print("......................${jsonData}");
+      print("........... get student list...........${widget.id}");
       studentList.clear();
       for (var eachStudentData in jsonData) {
         final stuList newStudent = stuList(
@@ -62,22 +62,6 @@ class _StuAttendanceState extends State<StuAttendance> {
     getstuList(); // Call getStuList on initialization
   }
 
-  // void filterStudents(String value) {
-  //   setState(() {
-  //     searchText = value;
-  //     filteredList = studentList
-  //         .where((student) => student.student_id.contains(value))
-  //         .toList();
-  //   });
-  // }
-
-  // void clearSearch() {
-  //   setState(() {
-  //     searchText = "";
-  //     // filteredList = studentList; // Reset to full list
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,14 +75,6 @@ class _StuAttendanceState extends State<StuAttendance> {
             ),
           ),
           backgroundColor: const Color.fromARGB(255, 170, 163, 163),
-          // actions: [
-          //   IconButton(
-          //     icon: const Icon(Icons.search),
-          //     onPressed: () {
-          //       filterStudents(searchText);
-          //     },
-          //   ),
-          // ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
