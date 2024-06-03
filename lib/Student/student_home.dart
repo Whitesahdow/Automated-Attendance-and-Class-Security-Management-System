@@ -279,10 +279,8 @@ class _StudentPageState extends State<StudentHome> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const Announcement(
-                        courseName: "course name goes here",
-                        roomNumber: "roomNumber goes here",
-                        start_time: '',
+                      builder: (context) => Announcement(
+                        my_token: widget.My_Token,
                       ),
                     ),
                   );
