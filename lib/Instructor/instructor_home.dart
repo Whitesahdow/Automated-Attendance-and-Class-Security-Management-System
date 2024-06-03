@@ -5,7 +5,7 @@ import 'package:AAMCS_App/Student/stu_Drawer/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/instructor_profile.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/session.dart';
-// import 'package:AAMCS_App/Student/My_Course/student_course.dart';
+
 import 'package:AAMCS_App/Login_out/logout.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';

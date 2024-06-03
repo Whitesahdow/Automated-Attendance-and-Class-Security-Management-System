@@ -30,7 +30,7 @@ class _SessionState extends State<Session> {
   List<dynamic> students_lister = [];
   List<dynamic> department_list = [];
   List<dynamic> batch_No = [];
-  static const List<String> _time = ['12', '11'];
+  static const List<String> _time = ['15', '12', '11'];
   String? dialogue_time;
 
   //get time => "";

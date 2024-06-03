@@ -10,11 +10,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String userType = ''; // Variable to store user type (teacher/student)
-  // String email = ''; // Variable to store email address
-  // String password = ''; // Variable to store password
-
-  // Function to handle user type selection
+  String userType = '';
   void setUserType(String type) {
     setState(() {
       userType = type;
