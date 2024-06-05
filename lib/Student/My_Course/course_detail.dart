@@ -1,52 +1,38 @@
-// ignore_for_file: unused_local_variable, library_private_types_in_public_api, non_constant_identifier_names
-
 import 'dart:convert';
-import 'dart:math';
-import 'package:AAMCS_App/Student/My_Course/course_list.dart';
-import 'package:AAMCS_App/Student/My_Course/student_attendance.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'student_attendance.dart';
 
-List<AttendanceRecord> attendanceRecords = [];
-List<AttendanceRecord> attendanceLoop() {
-  for (int i = 1; i <= 10; i++) {
-    // Generate random date and status for each record
-    final date = DateTime.now().subtract(Duration(days: i));
+class StuCrssDetails {
+  final String course_category;
+  final String course_code;
+  final String course_credit;
+  final String course_department;
+  final String course_name;
+  final String id;
 
-    final status = Random().nextBool()
-        ? AttendanceStatus.present
-        : AttendanceStatus.absent;
-    String? clockIn;
-    String? clockOut;
-    if (status == AttendanceStatus.present) {
-      // Generate random clock in/out times (assuming 8-hour workday)
-      final hourIn = Random().nextInt(9) + 8;
-      final minuteIn = Random().nextInt(60);
-      final hourOut =
-          hourIn + (Random().nextInt(3) + 1); // Between 1-3 hours later
-      final minuteOut = minuteIn;
-      clockIn =
-          "${hourIn.toString().padLeft(2, '0')}:${minuteIn.toString().padLeft(2, '0')}";
-      clockOut =
-          "${hourOut.toString().padLeft(2, '0')}:${minuteOut.toString().padLeft(2, '0')}";
-    }
-    attendanceRecords.add(AttendanceRecord(date, status, clockIn, clockOut));
-  }
-  return attendanceRecords;
+  StuCrssDetails({
+    required this.course_category,
+    required this.course_code,
+    required this.course_credit,
+    required this.course_department,
+    required this.course_name,
+    required this.id,
+  });
 }
 
 class StudentCourseDetail extends StatefulWidget {
   final String? My_Token;
-  final String id;
-  StudentCourseDetail(this.My_Token, this.id, {super.key});
+  final String course_id;
+
+  StudentCourseDetail(this.My_Token, this.course_id, {super.key});
 
   @override
-  State<StudentCourseDetail> createState() => _InstructorCourseDetailState();
+  State<StudentCourseDetail> createState() => _StudentCourseDetailState();
 }
 
-class _InstructorCourseDetailState extends State<StudentCourseDetail> {
+class _StudentCourseDetailState extends State<StudentCourseDetail> {
   late Future<StuCrssDetails> _dataFuture;
-  List<AttendanceRecord> attendanceRecord = attendanceLoop();
 
   @override
   void initState() {
@@ -56,7 +42,7 @@ class _InstructorCourseDetailState extends State<StudentCourseDetail> {
 
   Future<StuCrssDetails> getdata() async {
     final response = await http.get(
-      Uri.parse("https://besufikadyilma.tech/course/getid/${widget.id}"),
+      Uri.parse("https://besufikadyilma.tech/course/getid/${widget.course_id}"),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer ${widget.My_Token}"
@@ -100,28 +86,84 @@ class _InstructorCourseDetailState extends State<StudentCourseDetail> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Error: Cant find anything'));
+            return const Center(child: Text('Error: Cannot find anything'));
           } else {
             final courseDetails = snapshot.data!;
-            return Center(
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('course_code: ${snapshot.data!.course_code}'),
-                  Text('course_name: ${snapshot.data!.course_name}'),
-                  Text('course_category: ${snapshot.data!.course_category}} '),
                   Text(
-                      'course_department: ${snapshot.data!.course_department}'),
-                  Text('course_credit: ${snapshot.data!.course_credit} '),
-                  Text('Id key: ${snapshot.data!.id} '),
+                    'Course Code: ${courseDetails.course_code}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Sedan',
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Divider(),
+                  Text(
+                    'Course Name: ${courseDetails.course_name}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Sedan',
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Divider(),
+                  Text(
+                    'Course Category: ${courseDetails.course_category}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Sedan',
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Divider(),
+                  Text(
+                    'Course Department: ${courseDetails.course_department}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Sedan',
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Divider(),
+                  Text(
+                    'Course Credit: ${courseDetails.course_credit}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Sedan',
+                    ),
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 24.0),
                   Center(
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(
+                            255, 170, 163, 163), // Button color
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0, vertical: 12.0),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontFamily: 'Sedan',
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => AttendanceList(
-                              attendanceRecords: attendanceRecord,
+                              courseId: widget.course_id,
+                              myToken: widget.My_Token!,
                             ),
                           ),
                         );
@@ -130,7 +172,7 @@ class _InstructorCourseDetailState extends State<StudentCourseDetail> {
                         'My Attendance',
                         style: TextStyle(
                           color: Colors.black,
-                          fontFamily: 'sedan',
+                          fontFamily: 'Sedan',
                         ),
                       ),
                     ),
