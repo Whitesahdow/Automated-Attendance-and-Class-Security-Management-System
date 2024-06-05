@@ -36,6 +36,7 @@ class BookedSessionPage extends StatefulWidget {
 
 class _BookedSessionPageState extends State<BookedSessionPage> {
   bool _isReserved = true; // Flag to track reservation status
+  bool _isVerified = false;
   @override
   void initState() {
     super.initState();
@@ -207,15 +208,22 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                     child: const Text('Cancel'),
                   ),
                 ElevatedButton(
-                  onPressed: () {
-                    print(widget.instructor_id);
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Started_Class(
-                                widget.My_tokens, widget.course_ID)));
-                    print('Started button pressed!');
+                  onPressed: () async {
+                    await Verified_session(widget.My_tokens);
+
+                    //setState(() => _isReserved = false);
+                    //print("...........${widget.instructor_id}");
+                    if (message.msg == true) {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Started_Class(
+                                  widget.My_tokens, widget.course_ID)));
+                      print('Started button pressed!');
+                    } else {
+                      print("session is not verified");
+                    }
                   },
                   child: const Text('Started class'),
                 ),
@@ -237,7 +245,7 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
 
 Future<String?> Delete_session(String? Mytoken) async {
   const url_base = "https://besufikadyilma.tech/instructor/auth/delete-session";
-
+// /instructor/in-class
   try {
     var response = await http.delete(
       Uri.parse(url_base),
@@ -262,5 +270,45 @@ Future<String?> Delete_session(String? Mytoken) async {
   } catch (e) {
     print("Error: $e");
     return null;
+  }
+}
+
+class verif {
+  bool msg;
+  verif({
+    required this.msg,
+  });
+}
+
+verif message = verif(msg: false);
+
+Future<String?> Verified_session(String? Mytoken) async {
+  const url_base = "https://besufikadyilma.tech/instructor/in-class";
+// /instructor/in-class
+  try {
+    var response = await http.get(
+      Uri.parse(url_base),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${Mytoken}"
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var verif_status = jsonDecode(response.body);
+      print(verif_status);
+      //var verif_resonse = verif_status['msg'].toString();
+      message.msg = verif_status['msg'];
+      print(
+          "................ verif is runing........................................${message.msg}");
+
+      // return verif_resonse;
+    } else {
+      print("Errorrrrrrr : ${response.body}");
+     
+    }
+  } catch (e) {
+    message.msg = true;
+    print("Try failed so message will be : ${message.msg}");
   }
 }

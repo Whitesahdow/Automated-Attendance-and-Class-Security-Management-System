@@ -62,22 +62,6 @@ class _StuAttendanceState extends State<StuAttendance> {
     getstuList(); // Call getStuList on initialization
   }
 
-  // void filterStudents(String value) {
-  //   setState(() {
-  //     searchText = value;
-  //     filteredList = studentList
-  //         .where((student) => student.student_id.contains(value))
-  //         .toList();
-  //   });
-  // }
-
-  // void clearSearch() {
-  //   setState(() {
-  //     searchText = "";
-  //     // filteredList = studentList; // Reset to full list
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,46 +1,43 @@
 import 'dart:convert';
-// import 'dart:math';
-
 import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/student_attendance/stu_att_list.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 class Started_Class extends StatefulWidget {
   final String? myToken;
-  final String? id;
-  const Started_Class(this.myToken, this.id, {super.key});
+  final String? Course_id;
+  const Started_Class(this.myToken, this.Course_id, {super.key});
 
   @override
   State<Started_Class> createState() => _StuAttendanceState();
 }
 
 class _StuAttendanceState extends State<Started_Class> {
-  List<stuList> studentList = [];
+  List<In_class_STU> studentList = [];
   // List<stuList> filteredList = []; // List for search results
   bool isLoading = false; // Flag to indicate data fetching state
-  // String searchText = ""; // Stores the entered student ID for search
 
   Future<void> getstuList() async {
     setState(() {
       isLoading = false; // Set loading state to true
     });
     var response = await http.get(
-      Uri.parse("https://besufikadyilma.tech/student/attendance/${widget.id}"),
+      Uri.parse("https://besufikadyilma.tech/instructor/in-class"),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer ${widget.myToken}"
       },
     );
+    //print(response.body);
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
-      print("........... get student list...........${widget.id}");
+      print("........... get student list...........${widget.Course_id}");
       studentList.clear();
       for (var eachStudentData in jsonData) {
-        final stuList newStudent = stuList(
+        final In_class_STU newStudent = In_class_STU(
           student_id: eachStudentData['student_id'],
-          total_no: eachStudentData['total_class'].toString(),
-          attended_no: eachStudentData['attended'].toString(),
+          first_name: eachStudentData['first_name'].toString(),
+          arrived_time: eachStudentData['arrived_time'].toString(),
         );
 
         studentList.add(newStudent);
@@ -117,7 +114,7 @@ class _StuAttendanceState extends State<Started_Class> {
                                                     color: Colors.black)))),
                                     TableCell(
                                         child: Center(
-                                      child: Text("ATTENDED",
+                                      child: Text("First Name",
                                           style: TextStyle(
                                               fontSize: 16.0,
                                               fontWeight: FontWeight.bold,
@@ -125,7 +122,7 @@ class _StuAttendanceState extends State<Started_Class> {
                                     )),
                                     TableCell(
                                         child: Center(
-                                            child: Text("SESSIONS",
+                                            child: Text("Arrived",
                                                 style: TextStyle(
                                                     fontSize: 16.0,
                                                     fontWeight: FontWeight.bold,
@@ -146,19 +143,31 @@ class _StuAttendanceState extends State<Started_Class> {
                                       TableCell(
                                         child: Center(
                                             child: Text(
-                                                studentList[i].student_id)),
+                                                studentList[i].student_id!)),
                                       ),
                                       TableCell(
                                           child: Center(
                                               child: Text(
-                                                  studentList[i].attended_no))),
+                                                  studentList[i].first_name!))),
                                       TableCell(
                                           child: Center(
-                                              child: Text(
-                                                  studentList[i].total_no)))
+                                              child: Text(studentList[i]
+                                                  .arrived_time!)))
                                     ])
                             ])))
           ]),
         ));
   }
+}
+
+class In_class_STU {
+  late String? first_name;
+  late String? student_id;
+  late String? arrived_time;
+
+  In_class_STU({
+    required this.first_name,
+    required this.student_id,
+    required this.arrived_time,
+  });
 }

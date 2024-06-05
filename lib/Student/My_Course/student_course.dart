@@ -9,14 +9,14 @@ import 'package:http/http.dart' as http;
 class Student_Course extends StatelessWidget {
   List<Student_Courses> course_list = [];
   final String? My_Token;
-  final String id;
-  Student_Course(this.My_Token, this.id, {super.key});
+  final String course_id;
+  Student_Course(this.My_Token, this.course_id, {super.key});
 
   Future<List<Student_Courses>> getCourse() async {
     String url_base =
         "https://besufikadyilma.tech/instructor/get-class?student_id=";
-    String url_id = id;
-    print(".............................${id}");
+    String url_id = course_id;
+    print(".............................${course_id}");
     String url_final = url_base + url_id;
     print(".............................${url_final}");
     final response = await http.get(
@@ -103,7 +103,10 @@ class Student_Course extends StatelessWidget {
                           // when the list is tapped it will open a page
                           context,
                           MaterialPageRoute(
-                              builder: (context) => StudentCourseDetail(My_Token, snapshot.data![index].id)//for now it openes only mobile dev.t page
+                              builder: (context) => StudentCourseDetail(
+                                  My_Token,
+                                  snapshot.data![index]
+                                      .id) //for now it openes only mobile dev.t page
                               ),
                         ),
                       ),
