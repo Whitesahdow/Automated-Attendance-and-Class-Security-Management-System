@@ -115,19 +115,6 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
     }
   }
 
-  Future<void> _refreshData() async {
-    try {
-      final newData = getdata();
-      setState(() {
-        _dataFuture = newData;
-      });
-      await newData; // Ensure the new future is awaited and exceptions are handled.
-    } catch (e) {
-      // Handle the error appropriately here
-      print('Error refreshing data: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,307 +131,304 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
             onPressed: () => Navigator.pop(context), // Handle back button press
           ),
         ),
-        body: RefreshIndicator(
-          onRefresh: _refreshData,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Card(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  color: Colors
-                                      .blue, // Adjust border color as needed
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 15.0,
-                              ),
-                              child: Text(
-                                'Course Name: ',
-                                style: TextStyle(
-                                  fontFamily: 'sedan',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: Colors
+                                    .blue, // Adjust border color as needed
+                                width: 1.0,
                               ),
                             ),
                           ),
-                          Expanded(
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 15.0,
+                            ),
                             child: Text(
-                              widget.courseName.toString(),
-                              style: const TextStyle(
+                              'Course Name: ',
+                              style: TextStyle(
                                 fontFamily: 'sedan',
                                 fontSize: 16,
+                                fontWeight: FontWeight.bold,
                                 color: Colors.black87,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      // const SizedBox(height: 5.0),
-                      const Divider(),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  color: Colors
-                                      .blue, // Adjust border color as needed
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 11.9),
-                              child: Text(
-                                'Room Number:',
-                                style: TextStyle(
-                                  fontFamily: 'sedan',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            widget.roomNumber.toString(),
+                        ),
+                        Expanded(
+                          child: Text(
+                            widget.courseName.toString(),
                             style: const TextStyle(
                               fontFamily: 'sedan',
                               fontSize: 16,
                               color: Colors.black87,
                             ),
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  color: Colors
-                                      .blue, // Adjust border color as needed
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Text(
-                                'Section: ',
-                                style: TextStyle(
-                                  fontFamily: 'sedan',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            widget.section.toString(),
-                            style: const TextStyle(
-                              fontFamily: 'sedan',
-                              fontSize: 16,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  color: Colors
-                                      .blue, // Adjust border color as needed
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Text(
-                                'Batch/Year: ',
-                                style: TextStyle(
-                                  fontFamily: 'sedan',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            widget.batch.toString(),
-                            style: const TextStyle(
-                              fontFamily: 'sedan',
-                              fontSize: 16,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  color: Colors
-                                      .blue, // Adjust border color as needed
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 8.9,
-                              ),
-                              child: Text(
-                                'Department: ',
-                                style: TextStyle(
-                                  fontFamily: 'sedan',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            widget.department.toString(),
-                            style: const TextStyle(
-                              fontFamily: 'sedan',
-                              fontSize: 16,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  color: Colors
-                                      .blue, // Adjust border color as needed
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Text(
-                                'Time: ',
-                                style: TextStyle(
-                                  fontFamily: 'sedan',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            "${widget.time} minutes",
-                            style: const TextStyle(
-                              fontFamily: 'sedan',
-                              fontSize: 16,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_isReserved)
-                      ElevatedButton(
-                        onPressed: () => showDialog<bool>(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text(
-                              'Confirmation',
-                              style: TextStyle(
-                                  fontFamily: 'sedan',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.normal),
-                            ),
-                            content: Text(
-                                getConfirmationMessage()), // Use the dynamic message
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(
-                                    context, false), // Cancel the dialog
-                                child: const Text(
-                                  'No',
-                                  style: TextStyle(
-                                      fontFamily: 'sedan',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      fontStyle: FontStyle.normal),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context,
-                                      true); // Close dialog and perform deletion
-                                  Delete_session(widget.My_tokens);
-                                  setState(() => _isReserved = false);
-                                  Navigator.pop(
-                                      context); // Pop the current screen
-                                  print('Session deleted!');
-                                  // HapticFeedback
-                                  //     .vibrate(); // Simulate haptic feedback on confirmation
-                                },
-                                child: const Text(
-                                  'Yes',
-                                  style: TextStyle(
-                                      fontFamily: 'sedan',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      fontStyle: FontStyle.normal),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
-                        child: const Text('Cancel'),
-                      ),
-                    const SizedBox(
-                      width: 15,
+                      ],
+                    ),
+                    // const SizedBox(height: 5.0),
+                    const Divider(),
+                    Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: Colors
+                                    .blue, // Adjust border color as needed
+                                width: 1.0,
+                              ),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 11.9),
+                            child: Text(
+                              'Room Number:',
+                              style: TextStyle(
+                                fontFamily: 'sedan',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          widget.roomNumber.toString(),
+                          style: const TextStyle(
+                            fontFamily: 'sedan',
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                    Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: Colors
+                                    .blue, // Adjust border color as needed
+                                width: 1.0,
+                              ),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Section: ',
+                              style: TextStyle(
+                                fontFamily: 'sedan',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          widget.section.toString(),
+                          style: const TextStyle(
+                            fontFamily: 'sedan',
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                    Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: Colors
+                                    .blue, // Adjust border color as needed
+                                width: 1.0,
+                              ),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Batch/Year: ',
+                              style: TextStyle(
+                                fontFamily: 'sedan',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          widget.batch.toString(),
+                          style: const TextStyle(
+                            fontFamily: 'sedan',
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                    Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: Colors
+                                    .blue, // Adjust border color as needed
+                                width: 1.0,
+                              ),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.9,
+                            ),
+                            child: Text(
+                              'Department: ',
+                              style: TextStyle(
+                                fontFamily: 'sedan',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          widget.department.toString(),
+                          style: const TextStyle(
+                            fontFamily: 'sedan',
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                    Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: Colors
+                                    .blue, // Adjust border color as needed
+                                width: 1.0,
+                              ),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Time: ',
+                              style: TextStyle(
+                                fontFamily: 'sedan',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          "${widget.time} minutes",
+                          style: const TextStyle(
+                            fontFamily: 'sedan',
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_isReserved)
+                    ElevatedButton(
+                      onPressed: () => showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text(
+                            'Confirmation',
+                            style: TextStyle(
+                                fontFamily: 'sedan',
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.normal),
+                          ),
+                          content: Text(
+                              getConfirmationMessage()), // Use the dynamic message
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(
+                                  context, false), // Cancel the dialog
+                              child: const Text(
+                                'No',
+                                style: TextStyle(
+                                    fontFamily: 'sedan',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                    fontStyle: FontStyle.normal),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context,
+                                    true); // Close dialog and perform deletion
+                                Delete_session(widget.My_tokens);
+                                setState(() => _isReserved = false);
+                                Navigator.pop(
+                                    context); // Pop the current screen
+                                print('Session deleted!');
+                                // HapticFeedback
+                                //     .vibrate(); // Simulate haptic feedback on confirmation
+                              },
+                              child: const Text(
+                                'Yes',
+                                style: TextStyle(
+                                    fontFamily: 'sedan',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                    fontStyle: FontStyle.normal),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                ],
+              ),
+            ],
           ),
         ));
   }
