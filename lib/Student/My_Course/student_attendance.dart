@@ -76,10 +76,20 @@ class _AttendanceListState extends State<AttendanceList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 17, 40, 77),
         title: const Text(
           'Attendance List',
           style: TextStyle(
-              fontSize: 22, fontWeight: FontWeight.bold, fontFamily: 'sedan'),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'sedan',
+            color: Colors.white,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
+          color: Colors.white, // Set color to white
+          onPressed: () => Navigator.pop(context), // Handle back button press
         ),
       ),
       body: FutureBuilder<List<AttendanceRecord>>(
@@ -121,7 +131,7 @@ class _AttendanceListState extends State<AttendanceList> {
                                     color: Colors.black,
                                     fontFamily: 'sedan'),
                               ),
-                              const SizedBox(height: 8.0),
+                              const SizedBox(height: 5.0),
                               if (attendanceRecord.status !=
                                   "Didnt arrived yet") ...[
                                 Row(
@@ -129,14 +139,6 @@ class _AttendanceListState extends State<AttendanceList> {
                                   children: [
                                     Text(
                                       'Time In: ${attendanceRecord.clockIn}',
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: 'sedan',
-                                          color: Colors.black),
-                                    ),
-                                    const SizedBox(width: 10.0),
-                                    Text(
-                                      'Time Out: ${attendanceRecord.clockOut}',
                                       style: const TextStyle(
                                           fontSize: 14,
                                           fontFamily: 'sedan',

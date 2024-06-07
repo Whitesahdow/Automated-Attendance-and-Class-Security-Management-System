@@ -11,6 +11,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   String userType = '';
+  bool isLoading = false;
   void setUserType(String type) {
     setState(() {
       userType = type;
@@ -45,10 +46,6 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   OutlinedButton(
                     onPressed: () {
-                      /* Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const InstructorHome()));*/
                       setState(() {
                         userType = 'teacher';
                       });
@@ -108,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 20.0), // Add space between email and password fields
               // Password text field
               TextField(
-                //obscureText: true, // Hide password characters
+                obscureText: true, // Hide password characters
                 controller: auth_controller.password_controller,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -128,56 +125,55 @@ class _LoginPageState extends State<LoginPage> {
               // Login button
               ElevatedButton(
                 onPressed: () async {
+                  // Show loading indicator
+                  setState(() {
+                    isLoading = true; // Flag to indicate loading state
+                  });
                   var token = await auth_controller.loginuser(userType);
+                  setState(() {
+                    isLoading =
+                        false; // Hide loading indicator after login attempt
+                  });
                   if (auth_controller.reuest_responese.loginArr == "true") {
-                    //print(" in the if statementtttttttttttttttttttttttttttttttttttttttttttttttttt ${token}");
+                    // Login successful, navigate
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => userType == 'teacher'
-                              ? InstructorHome(token)
-                              : StudentHome(token)),
+                        builder: (context) => userType == 'teacher'
+                            ? InstructorHome(token)
+                            : StudentHome(token),
+                      ),
                       ModalRoute.withName('/'),
                     );
                   } else {
-                    print("Login has failed expect a dialogue box");
+                    // Login failed, show error dialog
                     _showLoginFailedDialog(context);
                   }
                 },
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(
-                      fontFamily: 'sedan',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
+                    fontFamily: 'sedan',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20.0,
                     vertical: 15.0,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        10.0), // Rounded corners for aesthetics
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-                child: const Text('Login'),
+                child: isLoading
+                    ? const CircularProgressIndicator(
+                        color: Color.fromARGB(255, 1, 100, 181)) // Show progress indicator
+                    : const Text(
+                        'Login'), // Display "Login" text when not loading
               ),
               const SizedBox(
                   height:
                       12.0), // Add space between button and forgot password text
               // Forgot password text
-              TextButton(
-                onPressed: () {
-                  // Handle forgot password functionality (e.g., navigate to password reset page)
-                  // ignore: avoid_print
-                  print('Forgot password pressed!');
-                },
-                child: const Text(
-                  'Forgot password?',
-                  style: TextStyle(
-                      fontFamily: 'Sedan',
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
             ],
           ),
         ),
@@ -185,7 +181,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
 void _showLoginFailedDialog(BuildContext context) {
   showDialog(
     context: context,
