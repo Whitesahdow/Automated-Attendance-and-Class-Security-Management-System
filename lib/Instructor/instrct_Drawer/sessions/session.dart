@@ -46,11 +46,6 @@ class _SessionState extends State<Session> {
     _fetch_student_List();
   }
 
-  // @override
-  // void dispose() {
-  //   _announcementController.dispose();
-  //   super.dispose();
-  // }
 //#############################################______fetchCourseList_____####################
   Map<String?, String?> course_dictionary =
       {}; // Define course_dictionary at class level
@@ -106,12 +101,20 @@ class _SessionState extends State<Session> {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
 
+        // Filter the jsonData to include only rooms that are not booked
+        var availableRooms =
+            jsonData.where((element) => element['is_booked'] == false).toList();
+
         setState(() {
-          roomnumber =
-              jsonData.map((element) => element['room'] as String).toList();
-          roomID = jsonData.map((room) => room['id'] as String).toList();
+          // Extract room numbers and IDs from the filtered data
+          roomnumber = availableRooms
+              .map((element) => element['room'] as String)
+              .toList();
+          roomID = availableRooms.map((room) => room['id'] as String).toList();
+
           print("working");
         });
+
         room_dictionary.clear();
         for (var i = 0; i < roomnumber.length; i++) {
           room_dictionary[roomnumber[i]] = roomID[i];
@@ -147,41 +150,6 @@ class _SessionState extends State<Session> {
     }
     // return InstInfo();
   }
-
-  // Future<void> _fetchsectionList() async {
-  //   final data = await getdata();
-  //   const url_base = "https://besufikadyilma.tech/instructor/get-class";
-  //   final user = data.id_key;
-  //   String cleanedId = user!.replaceAll('-', '');
-
-  //   // print("...................${user.toString()}");
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse("$url_base?instructors_id= $cleanedId"),
-  //       // Uri.parse(
-  //       //     ""),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": "Bearer ${widget.myToken}"
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       var jsonData = jsonDecode(response.body);
-
-  //       setState(() {
-  //         sectionList = (jsonData)
-  //             .map((course) => ScnLists(section: course['class']['section']))
-  //             .toList();
-  //       });
-  //     } else {
-  //       throw Exception('Failed to load courses');
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //     // Handle error
-  //   }
-  // }
 
   //#############################################______ fetch Department List_____####################
   Future<void> _fetch_Batch_List() async {
@@ -347,13 +315,20 @@ class _SessionState extends State<Session> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 17, 40, 77),
         title: const Text(
           'Session',
           style: TextStyle(
             fontFamily: 'Sedan',
             fontSize: 22,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
+          color: Colors.white, // Set color to white
+          onPressed: () => Navigator.pop(context), // Handle back button press
         ),
       ),
       body: SingleChildScrollView(
@@ -595,7 +570,14 @@ class _SessionState extends State<Session> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false), // Close dialog (no)
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                  fontFamily: 'sedan',
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  fontStyle: FontStyle.normal),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -626,7 +608,14 @@ class _SessionState extends State<Session> {
                 _showLoginFailedDialog(context);
               }
             },
-            child: const Text('Submit'),
+            child: const Text(
+              'Submit',
+              style: TextStyle(
+                  fontFamily: 'sedan',
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  fontStyle: FontStyle.normal),
+            ),
           ),
         ],
       ),

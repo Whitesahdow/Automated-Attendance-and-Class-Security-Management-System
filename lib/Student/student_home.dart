@@ -36,17 +36,11 @@ class _StudentPageState extends State<StudentHome> {
   @override
   void initState() {
     super.initState();
-    // print(
-    //     'My_Token received in StudentHome: ${auth_controller.reuest_responese.token}');
 
     _userDataFuture = getdata();
   }
 
-  // dynamic get beki => widget.My_Token;
-
   Future<Student_info> getdata() async {
-    // print(auth_controller.loginArr.toString());
-
     final response = await http.get(
       Uri.parse("https://besufikadyilma.tech/student/me"),
       headers: {
@@ -127,19 +121,11 @@ class _StudentPageState extends State<StudentHome> {
                             fontFamily: 'sedan',
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Email: ${snapshot.data!.email}',
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ],
                     ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 0),
                   Container(
-                    margin: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.all(0.0),
                     child: TableCalendar(
                       rowHeight: 40,
                       calendarFormat: CalendarFormat.month,
@@ -154,6 +140,9 @@ class _StudentPageState extends State<StudentHome> {
                       lastDay: DateTime.utc(2024, 11, 1),
                       onDaySelected: _onDaySelected,
                     ),
+                  ),
+                  Expanded(
+                    child: Image.asset("assets/images/Maps.jpg"),
                   ),
                 ],
               ),

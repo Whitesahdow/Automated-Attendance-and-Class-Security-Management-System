@@ -35,12 +35,6 @@ class LogoutPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     await logoutUser(usertype, My_Token);
-                    // final prefs = await SharedPreferences.getInstance();
-                    // await prefs
-                    //     .clear();
-
-                    // Clear all stored data in Shared Preferences
-                    // ignore: avoid_print
                     print('Logging out...');
                     Navigator.pushAndRemoveUntil(
                       context,

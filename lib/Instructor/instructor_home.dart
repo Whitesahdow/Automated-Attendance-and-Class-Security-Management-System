@@ -72,6 +72,7 @@ class _StudentPageState extends State<InstructorHome> {
     return Scaffold(
       key: _scaffoldKey, // Assign key to Scaffold
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 17, 40, 77),
         shadowColor: const Color.fromARGB(255, 20, 19, 18),
         elevation: 2,
         title: const Text(
@@ -79,10 +80,13 @@ class _StudentPageState extends State<InstructorHome> {
           style: TextStyle(
               fontSize: 22.0,
               fontWeight: FontWeight.bold,
-              fontFamily: 'sedan'), // Adjust title font size
+              color: Color.fromARGB(255, 255, 255, 255),
+              fontFamily: 'sedan'),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.menu), // Three lines menu icon
+          icon: const Icon(Icons.menu),
+          color:
+              const Color.fromARGB(255, 255, 252, 252), // Three lines menu icon
           onPressed: () =>
               _scaffoldKey.currentState!.openDrawer(), // Open Drawer on tap
         ),
@@ -109,19 +113,11 @@ class _StudentPageState extends State<InstructorHome> {
                             fontFamily: 'sedan',
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'Email: ${snapshot.data!.email}',
-                          style: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ],
                     ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 0),
                   Container(
-                    margin: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.all(0.0),
                     child: TableCalendar(
                       rowHeight: 40,
                       calendarFormat: CalendarFormat.month,
@@ -136,6 +132,9 @@ class _StudentPageState extends State<InstructorHome> {
                       lastDay: DateTime.utc(2024, 11, 1),
                       onDaySelected: _onDaySelected,
                     ),
+                  ),
+                  Expanded(
+                    child: Image.asset("assets/images/Maps.jpg"),
                   ),
                 ],
               ),
@@ -375,6 +374,9 @@ Future<void> Session_checker(String? Token) async {
         sessionCheck.course_name = body["session"]["course_name"];
         sessionCheck.room = body["session"]["room"];
         sessionCheck.start_time = body["session"]["start_time"];
+        sessionCheck.department = body["session"]["department"];
+        sessionCheck.section = body["session"]["section"];
+        sessionCheck.batch = body["session"]["batch"];
         sessionCheck.Instructor_ID = body["session"]["instructor_id"];
       }
     } else {
