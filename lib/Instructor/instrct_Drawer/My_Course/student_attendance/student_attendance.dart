@@ -35,7 +35,7 @@ class _StuAttendanceState extends State<StuAttendance> {
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
       print("......................${jsonData}");
-      studentList.clear();
+      // studentList.clear();
       for (var eachStudentData in jsonData) {
         final stuList newStudent = stuList(
           student_id: eachStudentData['student_id'],
@@ -72,17 +72,15 @@ class _StuAttendanceState extends State<StuAttendance> {
               fontFamily: 'Sedan',
               fontSize: 22,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
-          backgroundColor: const Color.fromARGB(255, 170, 163, 163),
-          // actions: [
-          //   IconButton(
-          //     icon: const Icon(Icons.search),
-          //     onPressed: () {
-          //       filterStudents(searchText);
-          //     },
-          //   ),
-          // ],
+          backgroundColor: const Color.fromARGB(255, 17, 40, 77),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
+            color: Colors.white, // Set color to white
+            onPressed: () => Navigator.pop(context), // Handle back button press
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),

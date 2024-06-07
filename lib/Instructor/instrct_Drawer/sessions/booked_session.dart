@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/started_class.dart';
-import 'package:AAMCS_App/Instructor/instructor_home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // For HapticFeedback
+import 'package:flutter/widgets.dart';
+
 import 'package:http/http.dart' as http;
 
 class BookedSessionPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class BookedSessionPage extends StatefulWidget {
   final String batch;
   final String department;
   final String time;
+  final bool msg;
   final String? My_tokens;
   final String? course_ID;
   final String? instructor_id;
@@ -26,6 +28,7 @@ class BookedSessionPage extends StatefulWidget {
       required this.batch,
       required this.department,
       required this.time,
+      this.msg = false,
       this.My_tokens,
       this.course_ID,
       this.instructor_id});
@@ -35,213 +38,417 @@ class BookedSessionPage extends StatefulWidget {
 }
 
 class _BookedSessionPageState extends State<BookedSessionPage> {
+  late Future<BookedSessionPage> _dataFuture;
   bool _isReserved = true; // Flag to track reservation status
-  bool _isVerified = false;
+
   @override
   void initState() {
     super.initState();
+    getConfirmationMessage();
+    _dataFuture = getdata();
+    _startVerificationTimer();
+
     // Perform any initialization tasks here
     print('BookedSessionPage initialized');
     //getStoredCourseID(); // For example, retrieve stored course ID
   }
 
+  late Timer _timer;
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _startVerificationTimer() {
+    _timer = Timer.periodic(Duration(seconds: 2), (timer) async {
+      await Verified_session(widget.My_tokens);
+      if (message.msg == true) {
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                Started_Class(widget.My_tokens, widget.course_ID),
+          ),
+        );
+        print('Navigating to Started_Class!');
+      } else {
+        print("Session is not verified");
+      }
+    });
+  }
+
+  Future<BookedSessionPage> getdata() async {
+    final response = await http.get(
+      Uri.parse("https://besufikadyilma.tech/instructor/get-session"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${widget.My_tokens}"
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(data);
+      final bookedsession = BookedSessionPage(
+        roomNumber: data['session']['room'],
+        courseName: data['session']['course_name'],
+        section: data['session']['section'],
+        batch: data['session']['batch'],
+        department: data['session']['department'],
+        time: data['session']['start_time'],
+        msg: data['msg'],
+      );
+      print("...............................${data}");
+      return bookedsession;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  String getConfirmationMessage() {
+    if (message.msg) {
+      return "Attention! Once you verify your enrollment, cancellation from here is no longer possible. To cancel after verification, you'll need to end your session.";
+    } else {
+      return 'Are you sure you want to cancel the session?';
+    }
+  }
+
+  Future<void> _refreshData() async {
+    try {
+      final newData = getdata();
+      setState(() {
+        _dataFuture = newData;
+      });
+      await newData; // Ensure the new future is awaited and exceptions are handled.
+    } catch (e) {
+      // Handle the error appropriately here
+      print('Error refreshing data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _isReserved ? 'Booked Session' : 'Session Canceled',
-          style: const TextStyle(
-            fontFamily: 'sedan',
-            fontSize: 22,
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 17, 40, 77),
+          title: Text(
+            _isReserved ? 'Booked Session' : 'Session Canceled',
+            style: const TextStyle(
+                fontFamily: 'sedan', fontSize: 22, color: Colors.white),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
+            color: Colors.white, // Set color to white
+            onPressed: () => Navigator.pop(context), // Handle back button press
           ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              Text(
-                'Course Name : ${widget.courseName}',
-                style: const TextStyle(
-                  fontFamily: 'sedan',
-                  fontSize: 16,
-                ),
-              ),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              const SizedBox(height: 5.0),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              Text(
-                'Room Number : ${widget.roomNumber}',
-                style: const TextStyle(
-                  fontFamily: 'sedan',
-                  fontSize: 16,
-                ),
-              ),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              const SizedBox(height: 5.0),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              Text(
-                'Section : ${widget.section}',
-                style: const TextStyle(
-                  fontFamily: 'sedan',
-                  fontSize: 16,
-                ),
-              ),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              const SizedBox(height: 5.0),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.batch.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              Text(
-                'Batch/Year : ${widget.batch}',
-                style: const TextStyle(
-                  fontFamily: 'sedan',
-                  fontSize: 16,
-                ),
-              ),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              const SizedBox(height: 5.0),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              Text(
-                'Department : ${widget.department}',
-                style: const TextStyle(
-                  fontFamily: 'sedan',
-                  fontSize: 16,
-                ),
-              ),
-            if (_isReserved || // Show details even if reserved but empty
-                widget.courseName.isNotEmpty ||
-                widget.roomNumber.isNotEmpty ||
-                widget.section.isNotEmpty ||
-                widget.department.isNotEmpty ||
-                widget.time.isNotEmpty)
-              Text(
-                'Time : in ${widget.time} minutes',
-                style: const TextStyle(
-                  fontFamily: 'sedan',
-                  fontSize: 19,
-                ),
-              ),
-            if (!_isReserved && // Show "No announcement today" for cancellations or empty data
-                widget.courseName.isEmpty &&
-                widget.roomNumber.isEmpty &&
-                widget.section.isEmpty &&
-                widget.department.isEmpty &&
-                widget.time.isEmpty)
-              const Center(
-                child: Text(
-                  'No announcement today',
-                  style: TextStyle(
-                    fontFamily: 'sedan',
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            const SizedBox(height: 20.0),
-            Row(
+        body: RefreshIndicator(
+          onRefresh: _refreshData,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (_isReserved)
-                  ElevatedButton(
-                    onPressed: () {
-                      Delete_session(widget.My_tokens);
-                      setState(() => _isReserved = false);
-                      Navigator.pop(context);
-                      print('Cancel button pressed!');
-                      // Simulate haptic feedback on cancellation
-                      HapticFeedback.vibrate();
-                    },
-                    child: const Text('Cancel'),
+                Card(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors
+                                      .blue, // Adjust border color as needed
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 15.0,
+                              ),
+                              child: Text(
+                                'Course Name: ',
+                                style: TextStyle(
+                                  fontFamily: 'sedan',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              widget.courseName.toString(),
+                              style: const TextStyle(
+                                fontFamily: 'sedan',
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // const SizedBox(height: 5.0),
+                      const Divider(),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors
+                                      .blue, // Adjust border color as needed
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 11.9),
+                              child: Text(
+                                'Room Number:',
+                                style: TextStyle(
+                                  fontFamily: 'sedan',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            widget.roomNumber.toString(),
+                            style: const TextStyle(
+                              fontFamily: 'sedan',
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors
+                                      .blue, // Adjust border color as needed
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                'Section: ',
+                                style: TextStyle(
+                                  fontFamily: 'sedan',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            widget.section.toString(),
+                            style: const TextStyle(
+                              fontFamily: 'sedan',
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors
+                                      .blue, // Adjust border color as needed
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                'Batch/Year: ',
+                                style: TextStyle(
+                                  fontFamily: 'sedan',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            widget.batch.toString(),
+                            style: const TextStyle(
+                              fontFamily: 'sedan',
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors
+                                      .blue, // Adjust border color as needed
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.9,
+                              ),
+                              child: Text(
+                                'Department: ',
+                                style: TextStyle(
+                                  fontFamily: 'sedan',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            widget.department.toString(),
+                            style: const TextStyle(
+                              fontFamily: 'sedan',
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors
+                                      .blue, // Adjust border color as needed
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                'Time: ',
+                                style: TextStyle(
+                                  fontFamily: 'sedan',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "${widget.time} minutes",
+                            style: const TextStyle(
+                              fontFamily: 'sedan',
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await Verified_session(widget.My_tokens);
-
-                    //setState(() => _isReserved = false);
-                    //print("...........${widget.instructor_id}");
-                    if (message.msg == true) {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Started_Class(
-                                  widget.My_tokens, widget.course_ID)));
-                      print('Started button pressed!');
-                    } else {
-                      print("session is not verified");
-                    }
-                  },
-                  child: const Text('Started class'),
+                ),
+                const SizedBox(height: 20.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (_isReserved)
+                      ElevatedButton(
+                        onPressed: () => showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text(
+                              'Confirmation',
+                              style: TextStyle(
+                                  fontFamily: 'sedan',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FontStyle.normal),
+                            ),
+                            content: Text(
+                                getConfirmationMessage()), // Use the dynamic message
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(
+                                    context, false), // Cancel the dialog
+                                child: const Text(
+                                  'No',
+                                  style: TextStyle(
+                                      fontFamily: 'sedan',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      fontStyle: FontStyle.normal),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context,
+                                      true); // Close dialog and perform deletion
+                                  Delete_session(widget.My_tokens);
+                                  setState(() => _isReserved = false);
+                                  Navigator.pop(
+                                      context); // Pop the current screen
+                                  print('Session deleted!');
+                                  // HapticFeedback
+                                  //     .vibrate(); // Simulate haptic feedback on confirmation
+                                },
+                                child: const Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                      fontFamily: 'sedan',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      fontStyle: FontStyle.normal),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        child: const Text('Cancel'),
+                      ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }
-
-// Future<String?> getStoredCourseID() async {
-//   SharedPreferences prefs = await SharedPreferences.getInstance();
-//   // Retrieve the stored value, default to null if the placeholder is found
-//   sessionCheck.courseID = prefs.getString('selectedCourseID');
-//   return sessionCheck.courseID;
-// }
 
 Future<String?> Delete_session(String? Mytoken) async {
   const url_base = "https://besufikadyilma.tech/instructor/auth/delete-session";
@@ -282,33 +489,29 @@ class verif {
 
 verif message = verif(msg: false);
 
-Future<String?> Verified_session(String? Mytoken) async {
+Future<void> Verified_session(String? Mytoken) async {
   const url_base = "https://besufikadyilma.tech/instructor/in-class";
-// /instructor/in-class
+
   try {
     var response = await http.get(
       Uri.parse(url_base),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${Mytoken}"
+        "Authorization": "Bearer $Mytoken"
       },
     );
 
     if (response.statusCode == 200) {
       var verif_status = jsonDecode(response.body);
       print(verif_status);
-      //var verif_resonse = verif_status['msg'].toString();
       message.msg = verif_status['msg'];
       print(
-          "................ verif is runing........................................${message.msg}");
-
-      // return verif_resonse;
+          "................ verif is running........................................${message.msg}");
     } else {
-      print("Errorrrrrrr : ${response.body}");
-     
+      print("Error: ${response.body}");
     }
   } catch (e) {
     message.msg = true;
-    print("Try failed so message will be : ${message.msg}");
+    print("Try failed so message will be: ${message.msg}");
   }
 }

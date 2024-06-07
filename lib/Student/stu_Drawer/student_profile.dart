@@ -88,16 +88,16 @@ class _StudentProfileState extends State<StudentProfile> {
             fontFamily: 'Sedan',
             fontSize: 22,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
-        backgroundColor: Color.fromARGB(81, 3, 57, 150),
-        elevation: 2.0,
+        backgroundColor: const Color.fromARGB(255, 17, 40, 77),
+        elevation: 0,
         shadowColor: Colors.black54,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
+          color: Colors.white, // Set color to white
+          onPressed: () => Navigator.pop(context), // Handle back button press
         ),
       ),
       body: RefreshIndicator(
