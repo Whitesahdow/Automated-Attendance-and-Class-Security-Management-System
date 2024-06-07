@@ -376,6 +376,9 @@ Future<void> Session_checker(String? Token) async {
         sessionCheck.room = body["session"]["room"];
         sessionCheck.start_time = body["session"]["start_time"];
         sessionCheck.Instructor_ID = body["session"]["instructor_id"];
+        sessionCheck.department = body["session"]["department"];
+        sessionCheck.section = body["session"]["section"];
+        sessionCheck.batch = body["session"]["batch"];
       }
     } else {
       print("Failed to load session data: ${response.statusCode}");

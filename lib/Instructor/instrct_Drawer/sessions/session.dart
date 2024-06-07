@@ -106,12 +106,20 @@ class _SessionState extends State<Session> {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
 
+        // Filter the jsonData to include only rooms that are not booked
+        var availableRooms =
+            jsonData.where((element) => element['is_booked'] == false).toList();
+
         setState(() {
-          roomnumber =
-              jsonData.map((element) => element['room'] as String).toList();
-          roomID = jsonData.map((room) => room['id'] as String).toList();
+          // Extract room numbers and IDs from the filtered data
+          roomnumber = availableRooms
+              .map((element) => element['room'] as String)
+              .toList();
+          roomID = availableRooms.map((room) => room['id'] as String).toList();
+
           print("working");
         });
+
         room_dictionary.clear();
         for (var i = 0; i < roomnumber.length; i++) {
           room_dictionary[roomnumber[i]] = roomID[i];
