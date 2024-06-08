@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import, must_be_immutable, camel_case_types, non_constant_identifier_names, unnecessary_brace_in_string_interps
+// ignore_for_file: unused_import, must_be_immutable, camel_case_types, non_constant_identifier_names, unnecessary_brace_in_string_interps, avoid_print
 
 import 'dart:convert';
 import 'package:AAMCS_App/Student/My_Course/course_detail.dart';
@@ -28,6 +28,12 @@ class Student_Course extends StatelessWidget {
     );
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
+      if (jsonData.isEmpty) {
+        // Handle empty jsonData
+        print("No data received from server");
+        return [];
+      }
+
       print(".................................${jsonData[0]["courses"]} ....");
       print(jsonData.length);
       for (var i = 0; i < jsonData.length; i++) {
@@ -45,8 +51,6 @@ class Student_Course extends StatelessWidget {
             );
             course_list.add(crsList);
           }
-        } else {
-          print("sdfghjklkjhgfdfghj2345678........................");
         }
       }
       return course_list;
@@ -83,43 +87,56 @@ class Student_Course extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                   child:
-                      CircularProgressIndicator()); // circular loading while it fetchs the data
+                      CircularProgressIndicator()); // circular loading while it fetches the data
             } else if (snapshot.hasError) {
               return Center(
                   child: Text(
                       'Error:${snapshot.stackTrace} ${snapshot.error}')); // if failed
             } else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                padding: const EdgeInsets.all(8),
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: ListTile(
-                        // it returns a list with padding of the fetched data
-                        title: Text(snapshot.data![index].course_name),
-                        subtitle: Text(
-                            "Credit Hours: ${snapshot.data![index].course_credit}"),
-                        onTap: () => Navigator.push(
-                          // when the list is tapped it will open a page
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => StudentCourseDetail(
-                                  My_Token,
-                                  snapshot.data![index]
-                                      .id) //for now it openes only mobile dev.t page
-                              ),
+              if (snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No Course',
+                    style: TextStyle(
+                      fontFamily: 'Sedan',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  padding: const EdgeInsets.all(8),
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ListTile(
+                          // it returns a list with padding of the fetched data
+                          title: Text(snapshot.data![index].course_name),
+                          subtitle: Text(
+                              "Credit Hours: ${snapshot.data![index].course_credit}"),
+                          onTap: () => Navigator.push(
+                            // when the list is tapped it will open a page
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => StudentCourseDetail(
+                                    My_Token,
+                                    snapshot.data![index]
+                                        .id) //for now it opens only mobile dev.t page
+                                ),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              );
+                    );
+                  },
+                );
+              }
             }
           },
         ),

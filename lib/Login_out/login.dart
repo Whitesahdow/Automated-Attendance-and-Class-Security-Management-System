@@ -4,7 +4,7 @@ import 'package:AAMCS_App/Instructor/instructor_home.dart';
 import 'package:AAMCS_App/Student/student_home.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -22,27 +22,20 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Avoid app bar for a clean login screen design
       appBar: null,
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
-          // Allow scrolling if keyboard appears
-          padding:
-              const EdgeInsets.all(20.0), // Add some padding for aesthetics
+          padding: const EdgeInsets.all(20.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-            crossAxisAlignment:
-                CrossAxisAlignment.stretch, // Stretch horizontally
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Center(child: Image.asset('assets/images/AASTU_logo.png')),
-              const SizedBox(
-                  height: 40.0), // Add space between text and buttons
+              const SizedBox(height: 40.0),
 
-              // User type selection buttons
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center, // Center buttons horizontally
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   OutlinedButton(
                     onPressed: () {
@@ -61,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(fontFamily: 'Sedan', fontSize: 16),
                     ),
                   ),
-                  const SizedBox(width: 20.0), // Add space between buttons
+                  const SizedBox(width: 20.0),
                   OutlinedButton(
                     onPressed: () {
                       setState(() {
@@ -81,75 +74,64 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-              const SizedBox(
-                  height: 20.0), // Add space between buttons and email field
-              // Email text field
+              const SizedBox(height: 20.0),
               TextField(
                 keyboardType: TextInputType.emailAddress,
-                controller: auth_controller
-                    .username_controller, // Set keyboard type for email
+                controller: auth_controller.username_controller,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: const TextStyle(
                     fontSize: 15,
                     fontFamily: 'sedan',
-                    //   fontWeight: FontWeight.bold,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                        10.0), // Rounded corners for aesthetics
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
               ),
-              const SizedBox(
-                  height: 20.0), // Add space between email and password fields
-              // Password text field
+              const SizedBox(height: 20.0),
               TextField(
-                obscureText: true, // Hide password characters
+                obscureText: true,
                 controller: auth_controller.password_controller,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: const TextStyle(
                     fontSize: 15,
                     fontFamily: 'sedan',
-                    // fontWeight: FontWeight.bold,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                        10.0), // Rounded corners for aesthetics
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
               ),
-              const SizedBox(
-                  height: 20.0), // Add space between password field and button
-              // Login button
+              const SizedBox(height: 20.0),
               ElevatedButton(
-                onPressed: () async {
-                  // Show loading indicator
-                  setState(() {
-                    isLoading = true; // Flag to indicate loading state
-                  });
-                  var token = await auth_controller.loginuser(userType);
-                  setState(() {
-                    isLoading =
-                        false; // Hide loading indicator after login attempt
-                  });
-                  if (auth_controller.reuest_responese.loginArr == "true") {
-                    // Login successful, navigate
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => userType == 'teacher'
-                            ? InstructorHome(token)
-                            : StudentHome(token),
-                      ),
-                      ModalRoute.withName('/'),
-                    );
-                  } else {
-                    // Login failed, show error dialog
-                    _showLoginFailedDialog(context);
-                  }
-                },
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        var token =
+                            await auth_controller.loginuser(userType);
+                        setState(() {
+                          isLoading = false;
+                        });
+                        if (auth_controller.reuest_responese.loginArr ==
+                            "true") {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => userType == 'teacher'
+                                  ? InstructorHome(token)
+                                  : StudentHome(token),
+                            ),
+                            ModalRoute.withName('/'),
+                          );
+                        } else {
+                          _showLoginFailedDialog(context);
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   textStyle: const TextStyle(
                     fontFamily: 'sedan',
@@ -166,14 +148,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: isLoading
                     ? const CircularProgressIndicator(
-                        color: Color.fromARGB(255, 1, 100, 181)) // Show progress indicator
-                    : const Text(
-                        'Login'), // Display "Login" text when not loading
+                        color: Color.fromARGB(255, 1, 100, 181))
+                    : const Text('Login'),
               ),
-              const SizedBox(
-                  height:
-                      12.0), // Add space between button and forgot password text
-              // Forgot password text
+              const SizedBox(height: 12.0),
             ],
           ),
         ),
@@ -181,6 +159,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
 void _showLoginFailedDialog(BuildContext context) {
   showDialog(
     context: context,
@@ -205,8 +184,7 @@ void _showLoginFailedDialog(BuildContext context) {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(
-              context), // Close dialog and return to the same page
+          onPressed: () => Navigator.pop(context),
           child: const Text('Okay'),
         ),
       ],
