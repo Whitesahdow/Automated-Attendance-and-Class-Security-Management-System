@@ -11,37 +11,32 @@ class Frontpage extends StatelessWidget {
     return Scaffold(
       appBar: null,
       backgroundColor: Colors.white,
-      body: Expanded(
-        // minimum: const EdgeInsets.only(top: 160.0), // Set only top padding
-        // maintainBottomViewPadding: true,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Center(
-                  child: Text(
-                    " Automated Attendance Management \n          and Class Security System",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontStyle: FontStyle.normal,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Sedan',
-                    ),
-                  ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Automated Attendance Management \nand Class Security System",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Sedan',
                 ),
-                Center(
-                  child: Image.asset("assets/images/AASTU_logo1.png"),
-                ),
-              ],
-            ),
-            const Center(
-              child: Text(
-                "    This App Is Designed For 5th Year Final Project.\n                                       trial phase",
+              ),
+              SizedBox(height: 20), // Add some space
+              Image.asset(
+                "assets/images/AASTU_logo1.png",
+                height: 150, // Adjust image height as needed
+              ),
+              SizedBox(height: 20), // Add some space
+              Text(
+                "This App Is Designed For 5th Year Final Project.\ntrial phase",
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 17,
@@ -49,9 +44,8 @@ class Frontpage extends StatelessWidget {
                   fontFamily: 'Lobster',
                 ),
               ),
-            ),
-            Center(
-              child: ElevatedButton(
+              SizedBox(height: 20), // Add some space
+              ElevatedButton(
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
@@ -60,7 +54,7 @@ class Frontpage extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text(
+                child: Text(
                   'Next',
                   style: TextStyle(
                     color: Colors.black,
@@ -68,8 +62,8 @@ class Frontpage extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -46,6 +46,15 @@ class _SessionState extends State<Session> {
     _fetch_student_List();
   }
 
+  bool _areAllFieldsFilled() {
+    return sessionData.courseName != null &&
+        sessionData.roomNumber != null &&
+        sessionData.department != null &&
+        sessionData.batch != null &&
+        sessionData.section != null &&
+        sessionData.time != null;
+  }
+
 //#############################################______fetchCourseList_____####################
   Map<String?, String?> course_dictionary =
       {}; // Define course_dictionary at class level
@@ -521,9 +530,11 @@ class _SessionState extends State<Session> {
             const SizedBox(height: 30),
 //#####################################################################################
             ElevatedButton(
-              onPressed: () {
-                _showConfirmationDialog(context, sessionData.time);
-              },
+              onPressed: _areAllFieldsFilled()
+                  ? () {
+                      _showConfirmationDialog(context, sessionData.time);
+                    }
+                  : null, // Disable the button if not all fields are filled
               child: const Text(
                 'Submit',
                 style: TextStyle(
