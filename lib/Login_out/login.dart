@@ -4,7 +4,7 @@ import 'package:AAMCS_App/Instructor/instructor_home.dart';
 import 'package:AAMCS_App/Student/student_home.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -38,15 +38,16 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        userType = 'teacher';
-                      });
-                    },
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            setState(() {
+                              userType = 'teacher';
+                            });
+                          },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
-                        color:
-                            userType == 'teacher' ? Colors.blue : Colors.grey,
+                        color: userType == 'teacher' ? Colors.blue : Colors.grey,
                       ),
                     ),
                     child: const Text(
@@ -56,11 +57,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(width: 20.0),
                   OutlinedButton(
-                    onPressed: () {
-                      setState(() {
-                        userType = 'student';
-                      });
-                    },
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            setState(() {
+                              userType = 'student';
+                            });
+                          },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
                           color: userType == 'student'
@@ -76,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 20.0),
               TextField(
+                enabled: !isLoading,
                 keyboardType: TextInputType.emailAddress,
                 controller: auth_controller.username_controller,
                 decoration: InputDecoration(
@@ -91,6 +95,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 20.0),
               TextField(
+                enabled: !isLoading,
                 obscureText: true,
                 controller: auth_controller.password_controller,
                 decoration: InputDecoration(
@@ -112,13 +117,11 @@ class _LoginPageState extends State<LoginPage> {
                         setState(() {
                           isLoading = true;
                         });
-                        var token =
-                            await auth_controller.loginuser(userType);
+                        var token = await auth_controller.loginuser(userType);
                         setState(() {
                           isLoading = false;
                         });
-                        if (auth_controller.reuest_responese.loginArr ==
-                            "true") {
+                        if (auth_controller.reuest_responese.loginArr == "true") {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(

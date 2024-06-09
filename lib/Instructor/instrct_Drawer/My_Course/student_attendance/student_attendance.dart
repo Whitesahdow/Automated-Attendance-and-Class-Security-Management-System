@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/student_attendance/stu_att_list.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 

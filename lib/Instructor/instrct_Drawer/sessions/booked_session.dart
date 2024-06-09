@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field, constant_identifier_names
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -68,7 +70,7 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
   }
 
   void _startVerificationTimer() {
-    _timer = Timer.periodic(Duration(seconds: 2), (timer) async {
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) async {
       await Verified_session(widget.My_tokens);
       if (message.msg == true) {
         // ignore: use_build_context_synchronously
@@ -106,7 +108,7 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
         time: data['session']['start_time'],
         msg: data['msg'],
       );
-      print("...............................${data}");
+      print("...............................$data");
       return bookedsession;
     } else {
       throw Exception('Failed to load data');
