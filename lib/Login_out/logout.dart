@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/front.dart';
