@@ -4,7 +4,7 @@ import 'package:AAMCS_App/Instructor/instructor_home.dart';
 import 'package:AAMCS_App/Student/student_home.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
