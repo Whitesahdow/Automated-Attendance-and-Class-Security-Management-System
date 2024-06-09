@@ -1,7 +1,7 @@
 import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/front.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences package
+// Import shared_preferences package
 
 class LogoutPage extends StatelessWidget {
   final String? My_Token;
@@ -35,12 +35,6 @@ class LogoutPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     await logoutUser(usertype, My_Token);
-                    // final prefs = await SharedPreferences.getInstance();
-                    // await prefs
-                    //     .clear();
-
-                    // Clear all stored data in Shared Preferences
-                    // ignore: avoid_print
                     print('Logging out...');
                     Navigator.pushAndRemoveUntil(
                       context,

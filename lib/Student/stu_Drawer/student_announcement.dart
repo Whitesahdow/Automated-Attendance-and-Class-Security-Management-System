@@ -10,7 +10,7 @@ class Announcement extends StatefulWidget {
   final String? my_token;
   final bool msg;
 
-  const Announcement({
+  const Announcement({super.key, 
     this.course,
     this.instructor,
     this.roomNumber,
@@ -53,7 +53,7 @@ class _AnnouncementState extends State<Announcement> {
     } catch (error) {
       // Handle any exceptions that occurred during the request
       print('Error fetching announcements: $error');
-      throw error;
+      rethrow;
     }
   }
 
@@ -63,9 +63,18 @@ class _AnnouncementState extends State<Announcement> {
       appBar: AppBar(
         title: const Text('Announcement',
             style: TextStyle(
-                fontFamily: 'Sedan',
-                fontSize: 22,
-                fontWeight: FontWeight.bold)),
+              fontFamily: 'Sedan',
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            )),
+        backgroundColor: const Color.fromARGB(255, 17, 40, 77),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
+          color: Colors.white, // Set color to white
+          onPressed: () => Navigator.pop(context), // Handle back button press
+        ),
       ),
       body: FutureBuilder<AnnouncementData>(
         future: announcementData,
@@ -73,87 +82,99 @@ class _AnnouncementState extends State<Announcement> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Errorrrrrrr: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final data = snapshot.data!;
             if (data.msg) {
-              return Center(
-                child: Card(
-                  margin: const EdgeInsets.all(16.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            const Text(
-                              'Course: ',
-                              style: TextStyle(
-                                  fontFamily: 'Sedan',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
+                        Card(
+                          margin: const EdgeInsets.all(16.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Course: ',
+                                      style: TextStyle(
+                                          fontFamily: 'Sedan',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        data.course ?? '',
+                                        style: const TextStyle(
+                                            fontFamily: 'Sedan',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(),
+                                Row(
+                                  children: [
+                                    const Text('Instructor: ',
+                                        style: TextStyle(
+                                            fontFamily: 'Sedan',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold)),
+                                    Text("Mr.${data.instructor ?? ''}",
+                                        style: const TextStyle(
+                                            fontFamily: 'Sedan',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal)),
+                                  ],
+                                ),
+                                const Divider(),
+                                Row(
+                                  children: [
+                                    const Text('Room number: ',
+                                        style: TextStyle(
+                                            fontFamily: 'Sedan',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold)),
+                                    Text(data.roomNumber ?? '',
+                                        style: const TextStyle(
+                                            fontFamily: 'Sedan',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal)),
+                                  ],
+                                ),
+                                const Divider(),
+                                Row(
+                                  children: [
+                                    const Text('Start time: ',
+                                        style: TextStyle(
+                                            fontFamily: 'Sedan',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold)),
+                                    Text(data.startTime ?? '',
+                                        style: const TextStyle(
+                                            fontFamily: 'Sedan',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal)),
+                                  ],
+                                ),
+                              ],
                             ),
-                            Expanded(
-                              child: Text(
-                                data.course ?? '',
-                                style: const TextStyle(
-                                    fontFamily: 'Sedan',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-                        Row(
-                          children: [
-                            const Text('Instructor: ',
-                                style: TextStyle(
-                                    fontFamily: 'Sedan',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold)),
-                            Text(data.instructor ?? '',
-                                style: const TextStyle(
-                                    fontFamily: 'Sedan',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal)),
-                          ],
-                        ),
-                        const Divider(),
-                        Row(
-                          children: [
-                            const Text('Room number: ',
-                                style: TextStyle(
-                                    fontFamily: 'Sedan',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold)),
-                            Text(data.roomNumber ?? '',
-                                style: const TextStyle(
-                                    fontFamily: 'Sedan',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal)),
-                          ],
-                        ),
-                        const Divider(),
-                        Row(
-                          children: [
-                            const Text('Start time: ',
-                                style: TextStyle(
-                                    fontFamily: 'Sedan',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold)),
-                            Text(data.startTime ?? '',
-                                style: const TextStyle(
-                                    fontFamily: 'Sedan',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal)),
-                          ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               );
             } else {

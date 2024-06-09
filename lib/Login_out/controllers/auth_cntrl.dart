@@ -21,13 +21,13 @@ class AuthController {
       return null;
     }
 
-    const url_base = "https://besufikadyilma.tech/";
-    const url_inst = "instructor/auth/login";
-    const url_stu = "student/auth/login";
-    var urlFinal;
+    const urlBase = "https://besufikadyilma.tech/";
+    const urlInst = "instructor/auth/login";
+    const urlStu = "student/auth/login";
+    String urlFinal;
     usertype == 'teacher'
-        ? urlFinal = url_base + url_inst
-        : urlFinal = url_base + url_stu;
+        ? urlFinal = urlBase + urlInst
+        : urlFinal = urlBase + urlStu;
 
     try {
       var response = await http.post(
@@ -42,7 +42,7 @@ class AuthController {
       );
 
       if (response.statusCode == 200) {
-        var Login_status = jsonDecode(response.body);
+        var loginStatus = jsonDecode(response.body);
         var cookie = response.headers["set-cookie"].toString();
 
         print(
@@ -50,12 +50,12 @@ class AuthController {
         // var split = reuest_responese.token;
         String? splits = cookie.split("=")[1];
         splits = splits.split(";")[0];
-        reuest_responese.loginArr = Login_status['msg'].toString();
+        reuest_responese.loginArr = loginStatus['msg'].toString();
         // print(
         //     " the message body  is...................................######################################## : $Login_status");
-        String token_response = splits.toString();
+        String tokenResponse = splits.toString();
         //bodyreturn = Login_status.toString();
-        print("after splitting ${token_response}");
+        print("after splitting $tokenResponse");
 
         // splits = reuest_responese.token;
         return splits;
@@ -71,27 +71,27 @@ class AuthController {
 }
 
 Future<String?> logoutUser(String usertype, String? Mytoken) async {
-  const url_base = "https://besufikadyilma.tech/";
-  const url_inst = "instructor/auth/logout";
-  const url_stu = "student/auth/logout";
-  var urlFinal;
+  const urlBase = "https://besufikadyilma.tech/";
+  const urlInst = "instructor/auth/logout";
+  const urlStu = "student/auth/logout";
+  String urlFinal;
   usertype == 'Teacher'
-      ? urlFinal = url_base + url_inst
-      : urlFinal = url_base + url_stu;
+      ? urlFinal = urlBase + urlInst
+      : urlFinal = urlBase + urlStu;
 
   try {
     var response = await http.post(
       Uri.parse(urlFinal),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${Mytoken}"
+        "Authorization": "Bearer $Mytoken"
       },
     );
 
     if (response.statusCode == 200) {
-      var Logout_status = jsonDecode(response.body);
+      var logoutStatus = jsonDecode(response.body);
 
-      var logoutResponse = Logout_status['msg'].toString();
+      var logoutResponse = logoutStatus['msg'].toString();
       print(
           "........................................................$logoutResponse");
 

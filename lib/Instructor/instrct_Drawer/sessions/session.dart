@@ -46,11 +46,6 @@ class _SessionState extends State<Session> {
     _fetch_student_List();
   }
 
-  // @override
-  // void dispose() {
-  //   _announcementController.dispose();
-  //   super.dispose();
-  // }
 //#############################################______fetchCourseList_____####################
   Map<String?, String?> course_dictionary =
       {}; // Define course_dictionary at class level
@@ -78,9 +73,9 @@ class _SessionState extends State<Session> {
         });
 
         course_dictionary.clear(); // Clear previous data
-        menu_lists.forEach((course) {
+        for (var course in menu_lists) {
           course_dictionary[course.course_name] = course.course_id;
-        });
+        }
       } else {
         throw Exception('Failed to load courses');
       }
@@ -156,52 +151,17 @@ class _SessionState extends State<Session> {
     // return InstInfo();
   }
 
-  // Future<void> _fetchsectionList() async {
-  //   final data = await getdata();
-  //   const url_base = "https://besufikadyilma.tech/instructor/get-class";
-  //   final user = data.id_key;
-  //   String cleanedId = user!.replaceAll('-', '');
-
-  //   // print("...................${user.toString()}");
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse("$url_base?instructors_id= $cleanedId"),
-  //       // Uri.parse(
-  //       //     ""),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": "Bearer ${widget.myToken}"
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       var jsonData = jsonDecode(response.body);
-
-  //       setState(() {
-  //         sectionList = (jsonData)
-  //             .map((course) => ScnLists(section: course['class']['section']))
-  //             .toList();
-  //       });
-  //     } else {
-  //       throw Exception('Failed to load courses');
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //     // Handle error
-  //   }
-  // }
-
   //#############################################______ fetch Department List_____####################
   Future<void> _fetch_Batch_List() async {
-    final dept_data = await getdata();
-    const url_base = "https://besufikadyilma.tech/instructor/get-class";
-    final dep_user = dept_data.id_key;
-    String cleanedId = dep_user!.replaceAll('-', '');
+    final deptData = await getdata();
+    const urlBase = "https://besufikadyilma.tech/instructor/get-class";
+    final depUser = deptData.id_key;
+    String cleanedId = depUser!.replaceAll('-', '');
 
     // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("$url_base?instructors_id=$cleanedId"),
+        Uri.parse("$urlBase?instructors_id=$cleanedId"),
         // Uri.parse(
         //     ""),
         headers: {
@@ -229,15 +189,15 @@ class _SessionState extends State<Session> {
 
 //################################
   Future<void> _fetch_Dept_List() async {
-    final dept_data = await getdata();
-    const url_base = "https://besufikadyilma.tech/instructor/get-class";
-    final dep_user = dept_data.id_key;
-    String cleanedId = dep_user!.replaceAll('-', '');
+    final deptData = await getdata();
+    const urlBase = "https://besufikadyilma.tech/instructor/get-class";
+    final depUser = deptData.id_key;
+    String cleanedId = depUser!.replaceAll('-', '');
 
     // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("$url_base?instructors_id=$cleanedId"),
+        Uri.parse("$urlBase?instructors_id=$cleanedId"),
         // Uri.parse(
         //     ""),
         headers: {
@@ -267,15 +227,15 @@ class _SessionState extends State<Session> {
   //##############################################################################
 
   Future<void> _fetch_section_List() async {
-    final dept_data = await getdata();
-    const url_base = "https://besufikadyilma.tech/instructor/get-class";
-    final dep_user = dept_data.id_key;
-    String cleanedId = dep_user!.replaceAll('-', '');
+    final deptData = await getdata();
+    const urlBase = "https://besufikadyilma.tech/instructor/get-class";
+    final depUser = deptData.id_key;
+    String cleanedId = depUser!.replaceAll('-', '');
 
     // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("$url_base?instructors_id=$cleanedId"),
+        Uri.parse("$urlBase?instructors_id=$cleanedId"),
         // Uri.parse(
         //     ""),
         headers: {
@@ -304,13 +264,13 @@ class _SessionState extends State<Session> {
   //########################################### Student list fetcher
   Future<void> _fetch_student_List() async {
     final data = await getdata();
-    const url_base = "https://besufikadyilma.tech/instructor/get-class";
+    const urlBase = "https://besufikadyilma.tech/instructor/get-class";
     final user = data.id_key;
     String cleanedId = user!.replaceAll('-', '');
 
     try {
       final response = await http.get(
-        Uri.parse("$url_base?instructors_id=$cleanedId"),
+        Uri.parse("$urlBase?instructors_id=$cleanedId"),
         // Uri.parse(
         //     ""),
         headers: {
@@ -355,13 +315,20 @@ class _SessionState extends State<Session> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 17, 40, 77),
         title: const Text(
           'Session',
           style: TextStyle(
             fontFamily: 'Sedan',
             fontSize: 22,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
+          color: Colors.white, // Set color to white
+          onPressed: () => Navigator.pop(context), // Handle back button press
         ),
       ),
       body: SingleChildScrollView(
@@ -446,9 +413,9 @@ class _SessionState extends State<Session> {
             DropdownButtonFormField<String>(
               value: _selectedDepartment,
               items: department_list
-                  .map((dept_choice) => DropdownMenuItem<String>(
-                        value: dept_choice.department_name,
-                        child: Text(dept_choice.department_name),
+                  .map((deptChoice) => DropdownMenuItem<String>(
+                        value: deptChoice.department_name,
+                        child: Text(deptChoice.department_name),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -572,7 +539,7 @@ class _SessionState extends State<Session> {
     );
   }
 
-  void _showConfirmationDialog(BuildContext context, String? dialogue_time) {
+  void _showConfirmationDialog(BuildContext context, String? dialogueTime) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -590,7 +557,7 @@ class _SessionState extends State<Session> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Warning: Once you confirm the session, the room will be reserved for $dialogue_time minutes. Failure to unlock it within this time will result in the room becoming available again, and the session will be canceled.',
+              'Warning: Once you confirm the session, the room will be reserved for $dialogueTime minutes. Failure to unlock it within this time will result in the room becoming available again, and the session will be canceled.',
               style: const TextStyle(
                 fontFamily: 'sedan',
                 fontSize: 17,
@@ -603,7 +570,14 @@ class _SessionState extends State<Session> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false), // Close dialog (no)
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                  fontFamily: 'sedan',
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  fontStyle: FontStyle.normal),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -634,7 +608,14 @@ class _SessionState extends State<Session> {
                 _showLoginFailedDialog(context);
               }
             },
-            child: const Text('Submit'),
+            child: const Text(
+              'Submit',
+              style: TextStyle(
+                  fontFamily: 'sedan',
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  fontStyle: FontStyle.normal),
+            ),
           ),
         ],
       ),
@@ -651,7 +632,7 @@ Sessionresponse message = Sessionresponse();
 
 Future<void> createSession(
   var roomID,
-  var course_id,
+  var courseId,
   List<String> studentsList,
   var selectedTime,
   var token,
@@ -664,7 +645,7 @@ Future<void> createSession(
       Uri.parse(urlBase),
       body: jsonEncode({
         "room_id": roomID,
-        "course_id": course_id,
+        "course_id": courseId,
         "student_list": studentsList,
         "start_time": selectedTime,
         // Pass studentId here
@@ -683,11 +664,11 @@ Future<void> createSession(
     } else {
       message.message = false;
       print("Error : ${response.body}");
-      return null;
+      return;
     }
   } catch (e) {
     print("Error: $e");
-    return null;
+    return;
   }
 }
 

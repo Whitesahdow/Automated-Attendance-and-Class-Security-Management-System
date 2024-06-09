@@ -11,10 +11,12 @@ class Frontpage extends StatelessWidget {
     return Scaffold(
       appBar: null,
       backgroundColor: Colors.white,
-      body: SafeArea(
-        minimum: const EdgeInsets.only(top: 160.0), // Set only top padding
-        maintainBottomViewPadding: true,
+      body: Expanded(
+        // minimum: const EdgeInsets.only(top: 160.0), // Set only top padding
+        // maintainBottomViewPadding: true,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
