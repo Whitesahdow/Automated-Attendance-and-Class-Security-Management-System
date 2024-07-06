@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously, non_constant_identifier_names
+
 import 'dart:convert';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/instructor_course.dart';
 import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/booked_session.dart';
@@ -133,7 +135,6 @@ class _StudentPageState extends State<InstructorHome> {
                       onDaySelected: _onDaySelected,
                     ),
                   ),
-                 
                 ],
               ),
             );
@@ -238,6 +239,7 @@ class _StudentPageState extends State<InstructorHome> {
                       'My Courses button pressed!....................................${widget.My_Token}');
                 },
               ),
+              const Divider(),
               ListTile(
                 title: Row(
                   children: [
@@ -289,6 +291,7 @@ class _StudentPageState extends State<InstructorHome> {
                   }
                 },
               ),
+              const Divider(),
               ListTile(
                 title: Row(
                   children: [
@@ -317,6 +320,7 @@ class _StudentPageState extends State<InstructorHome> {
                   print('Profile button pressed!');
                 },
               ),
+              const Divider(),
               ListTile(
                 title: Row(
                   children: [
@@ -346,6 +350,7 @@ class _StudentPageState extends State<InstructorHome> {
                   print('Logout button pressed!');
                 },
               ),
+              const Divider(),
             ],
           );
         },

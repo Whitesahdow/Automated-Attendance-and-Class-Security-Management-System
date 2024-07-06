@@ -1,3 +1,5 @@
+// ignore_for_file: use_rethrow_when_possible, use_super_parameters, avoid_print
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -62,7 +64,12 @@ class _AttendanceListState extends State<AttendanceList> {
 
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => AttendanceRecord.fromJson(json)).toList();
+        List<AttendanceRecord> records =
+            data.map((json) => AttendanceRecord.fromJson(json)).toList();
+
+        // Sort records by date in descending order
+        records.sort((a, b) => b.date.compareTo(a.date));
+        return records;
       } else {
         throw Exception('Failed to load attendance records');
       }
@@ -70,6 +77,12 @@ class _AttendanceListState extends State<AttendanceList> {
       print('Error fetching attendance records: $error');
       rethrow;
     }
+  }
+
+  Future<void> _refreshAttendanceList() async {
+    setState(() {
+      attendanceData = fetchAttendanceRecords();
+    });
   }
 
   @override
@@ -87,89 +100,92 @@ class _AttendanceListState extends State<AttendanceList> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
-          color: Colors.white, // Set color to white
-          onPressed: () => Navigator.pop(context), // Handle back button press
+          icon: const Icon(Icons.arrow_back_ios),
+          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: FutureBuilder<List<AttendanceRecord>>(
-        future: attendanceData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final attendanceRecords = snapshot.data!;
-            return ListView.builder(
-              itemCount: attendanceRecords.length,
-              itemBuilder: (context, index) {
-                final attendanceRecord = attendanceRecords[index];
-                return ListTile(
-                  subtitle: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color:
-                                attendanceRecord.status == "Didnt arrived yet"
-                                    ? const Color.fromARGB(139, 208, 43, 60)
-                                    : const Color.fromARGB(98, 7, 223, 54),
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                attendanceRecord.status == "Didnt arrived yet"
-                                    ? 'Missed/Skipped/Unavailable'
-                                    : 'Attended',
-                                style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontFamily: 'sedan'),
-                              ),
-                              const SizedBox(height: 5.0),
-                              if (attendanceRecord.status !=
-                                  "Didnt arrived yet") ...[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Time In: ${attendanceRecord.clockIn}',
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: 'sedan',
-                                          color: Colors.black),
-                                    ),
-                                  ],
+      body: RefreshIndicator(
+        onRefresh: _refreshAttendanceList,
+        child: FutureBuilder<List<AttendanceRecord>>(
+          future: attendanceData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (snapshot.hasData) {
+              final attendanceRecords = snapshot.data!;
+              return ListView.builder(
+                itemCount: attendanceRecords.length,
+                itemBuilder: (context, index) {
+                  final attendanceRecord = attendanceRecords[index];
+                  return ListTile(
+                    subtitle: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color:
+                                  attendanceRecord.status == "Didnt arrived yet"
+                                      ? const Color.fromARGB(139, 208, 43, 60)
+                                      : const Color.fromARGB(98, 7, 223, 54),
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  attendanceRecord.status == "Didnt arrived yet"
+                                      ? 'Missed/Skipped/Unavailable'
+                                      : 'Attended',
+                                  style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      fontFamily: 'sedan'),
+                                ),
+                                const SizedBox(height: 5.0),
+                                if (attendanceRecord.status !=
+                                    "Didnt arrived yet") ...[
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Time In: ${attendanceRecord.clockIn}',
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: 'sedan',
+                                            color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                                Text(
+                                  DateFormat.yMMMEd()
+                                      .format(attendanceRecord.date),
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'sedan',
+                                      fontStyle: FontStyle.italic,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
                                 ),
                               ],
-                              Text(
-                                DateFormat.yMMMEd()
-                                    .format(attendanceRecord.date),
-                                style: const TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: 'sedan',
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              },
-            );
-          } else {
-            return const Center(child: Text('No data available'));
-          }
-        },
+                        )
+                      ],
+                    ),
+                  );
+                },
+              );
+            } else {
+              return const Center(child: Text('No data available'));
+            }
+          },
+        ),
       ),
     );
   }

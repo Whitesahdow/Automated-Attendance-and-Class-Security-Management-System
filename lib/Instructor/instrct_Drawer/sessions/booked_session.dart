@@ -1,11 +1,10 @@
+// ignore_for_file: unused_field, constant_identifier_names
+
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:AAMCS_App/Instructor/instrct_Drawer/sessions/started_class.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-
 import 'package:http/http.dart' as http;
 
 class BookedSessionPage extends StatefulWidget {
@@ -40,6 +39,7 @@ class BookedSessionPage extends StatefulWidget {
 class _BookedSessionPageState extends State<BookedSessionPage> {
   late Future<BookedSessionPage> _dataFuture;
   bool _isReserved = true; // Flag to track reservation status
+  bool _isButtonEnabled = false; // Flag to track the button's enabled status
 
   @override
   void initState() {
@@ -47,6 +47,14 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
     getConfirmationMessage();
     _dataFuture = getdata();
     _startVerificationTimer();
+
+    // Disable the cancel button initially
+    _isButtonEnabled = false;
+    Timer(const Duration(seconds: 3), () {
+      setState(() {
+        _isButtonEnabled = true;
+      });
+    });
 
     // Perform any initialization tasks here
     print('BookedSessionPage initialized');
@@ -62,7 +70,7 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
   }
 
   void _startVerificationTimer() {
-    _timer = Timer.periodic(Duration(seconds: 2), (timer) async {
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) async {
       await Verified_session(widget.My_tokens);
       if (message.msg == true) {
         Navigator.of(context).pushReplacement(
@@ -99,7 +107,7 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
         time: data['session']['start_time'],
         msg: data['msg'],
       );
-      print("...............................${data}");
+      print("...............................$data");
       return bookedsession;
     } else {
       throw Exception('Failed to load data');
@@ -108,9 +116,13 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
 
   String getConfirmationMessage() {
     if (message.msg) {
-      return "Attention! Once you verify your enrollment, cancellation from here is no longer possible. To cancel after verification, you'll need to end your session.";
+      return "the class has already begun, you can't cancel it from here!";
     } else {
+<<<<<<< HEAD
       return 'Your reservation will be cancelled if you confirm. Click "Cancel" to proceed or "Close" to return. .';
+=======
+      return 'Are you sure you want to cancel the session?';
+>>>>>>> origin/main
     }
   }
 
@@ -370,6 +382,7 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                 children: [
                   if (_isReserved)
                     ElevatedButton(
+<<<<<<< HEAD
                       onPressed: () => showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -420,11 +433,66 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                           ],
                         ),
                       ),
+=======
+                      onPressed: _isButtonEnabled
+                          ? () => showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text(
+                                    'Confirmation',
+                                    style: TextStyle(
+                                        fontFamily: 'sedan',
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        fontStyle: FontStyle.normal),
+                                  ),
+                                  content: Text(
+                                      getConfirmationMessage()), // Use the dynamic message
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(
+                                          context, false), // Cancel the dialog
+                                      child: const Text(
+                                        'No',
+                                        style: TextStyle(
+                                            fontFamily: 'sedan',
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.normal,
+                                            fontStyle: FontStyle.normal),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context,
+                                            true); // Close dialog and perform deletion
+                                        Delete_session(widget.My_tokens);
+                                        setState(() => _isReserved = false);
+                                        Navigator.pop(
+                                            context); // Pop the current screen
+                                        print('Session deleted!');
+                                        // HapticFeedback
+                                        //     .vibrate(); // Simulate haptic feedback on confirmation
+                                      },
+                                      child: const Text(
+                                        'Yes',
+                                        style: TextStyle(
+                                            fontFamily: 'sedan',
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.normal,
+                                            fontStyle: FontStyle.normal),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                          : null,
+>>>>>>> origin/main
                       child: const Text('Cancel'),
                     ),
                   const SizedBox(
                     width: 15,
                   ),
+<<<<<<< HEAD
                   // ElevatedButton(
                   //   onPressed: () async {
                   //     await Verified_session(widget.My_tokens);
@@ -442,6 +510,8 @@ class _BookedSessionPageState extends State<BookedSessionPage> {
                   //   },
                   //   child: const Text('Started class'),
                   // ),
+=======
+>>>>>>> origin/main
                 ],
               ),
             ],
@@ -458,7 +528,7 @@ Future<String?> Delete_session(String? Mytoken) async {
       Uri.parse(url_base),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${Mytoken}"
+        "Authorization": "Bearer $Mytoken"
       },
     );
 

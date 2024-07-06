@@ -1,9 +1,5 @@
 import 'dart:convert';
-// import 'dart:math';
-
-import 'package:AAMCS_App/Instructor/instrct_Drawer/My_Course/student_attendance/stu_att_list.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 class StuAttendance extends StatefulWidget {
@@ -17,13 +13,11 @@ class StuAttendance extends StatefulWidget {
 
 class _StuAttendanceState extends State<StuAttendance> {
   List<stuList> studentList = [];
-  // List<stuList> filteredList = []; // List for search results
-  bool isLoading = false; // Flag to indicate data fetching state
-  // String searchText = ""; // Stores the entered student ID for search
+  bool isLoading = false;
 
   Future<void> getstuList() async {
     setState(() {
-      isLoading = false; // Set loading state to true
+      isLoading = true;
     });
     var response = await http.get(
       Uri.parse("https://besufikadyilma.tech/student/attendance/${widget.id}"),
@@ -34,137 +28,226 @@ class _StuAttendanceState extends State<StuAttendance> {
     );
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
+<<<<<<< HEAD
       print("......................$jsonData");
       // studentList.clear();
+=======
+      studentList.clear();
+>>>>>>> origin/main
       for (var eachStudentData in jsonData) {
         final stuList newStudent = stuList(
           student_id: eachStudentData['student_id'],
           total_no: eachStudentData['total_class'].toString(),
           attended_no: eachStudentData['attended'].toString(),
+          batch: eachStudentData['batch'].toString(),
+          section: eachStudentData['section'].toString(),
         );
 
         studentList.add(newStudent);
       }
-      // filteredList = studentList; // Initially set filteredList to full list
+
+      // Sort the student list by batch, section, and student_id
+      studentList.sort((a, b) {
+        int batchCompare = a.batch!.compareTo(b.batch!);
+        if (batchCompare != 0) return batchCompare;
+        int sectionCompare = a.section!.compareTo(b.section!);
+        if (sectionCompare != 0) return sectionCompare;
+        return a.student_id!.compareTo(b.student_id!);
+      });
 
       setState(() {
-        isLoading = false; // Set loading state to false after successful fetch
+        isLoading = false;
       });
     } else {
-      // Handle error here
-      throw Exception('Failed to load teams');
+      setState(() {
+        isLoading = false;
+      });
+      throw Exception('Failed to load student data');
     }
   }
 
   @override
   void initState() {
     super.initState();
-    getstuList(); // Call getStuList on initialization
+    getstuList();
+  }
+
+  Widget _buildTables() {
+    Map<String, List<stuList>> groupedStudents = {};
+    for (var student in studentList) {
+      String key = 'Batch ${student.batch}, Section ${student.section}';
+      if (!groupedStudents.containsKey(key)) {
+        groupedStudents[key] = [];
+      }
+      groupedStudents[key]!.add(student);
+    }
+
+    return Column(
+      children: groupedStudents.entries.map((entry) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              entry.key,
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Table(
+              columnWidths: const {
+                0: FlexColumnWidth(1),
+                1: FlexColumnWidth(2.5),
+                2: FlexColumnWidth(2.5),
+                3: FlexColumnWidth(2.5),
+              },
+              border: TableBorder.all(
+                color: Colors.grey,
+                width: 1.0,
+              ),
+              children: [
+                TableRow(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                  ),
+                  children: const [
+                    TableCell(
+                      child: Center(
+                        child: Text(
+                          "No",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Center(
+                        child: Text(
+                          "ID",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Center(
+                        child: Text(
+                          "Attended",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Center(
+                        child: Text(
+                          "Sessions",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                for (int i = 0; i < entry.value.length; i++)
+                  TableRow(
+                    decoration: BoxDecoration(
+                      color: i % 2 == 0 ? Colors.grey[200] : null,
+                    ),
+                    children: [
+                      TableCell(
+                        child: Center(
+                          child: Text((i + 1).toString()),
+                        ),
+                      ),
+                      TableCell(
+                        child: Center(
+                          child: Text(entry.value[i].student_id!),
+                        ),
+                      ),
+                      TableCell(
+                        child: Center(
+                          child: Text(entry.value[i].attended_no!),
+                        ),
+                      ),
+                      TableCell(
+                        child: Center(
+                          child: Text(entry.value[i].total_no!),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        );
+      }).toList(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Student Attendance List',
-            style: TextStyle(
-              fontFamily: 'Sedan',
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: const Color.fromARGB(255, 17, 40, 77),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios), // Use desired arrow icon
-            color: Colors.white, // Set color to white
-            onPressed: () => Navigator.pop(context), // Handle back button press
+      appBar: AppBar(
+        title: const Text(
+          'Student Attendance List',
+          style: TextStyle(
+            fontFamily: 'Sedan',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
-        body: Padding(
+        backgroundColor: const Color.fromARGB(255, 17, 40, 77),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: RefreshIndicator(
+        onRefresh: getstuList,
+        child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(children: [
-            Expanded(
-                child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.green)
-                    : SingleChildScrollView(
-                        child: Table(
-                            columnWidths: const {
-                              0: FlexColumnWidth(1),
-                              1: FlexColumnWidth(2.5),
-                              2: FlexColumnWidth(2.5),
-                              3: FlexColumnWidth(2.5),
-                            },
-                            border: TableBorder.all(
-                              color: Colors.grey,
-                              width: 1.0,
-                            ),
-                            children: [
-                              TableRow(
-                                  // Header row with decoration and text styling
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                  ),
-                                  children: const [
-                                    TableCell(
-                                        child: Center(
-                                            child: Text("No",
-                                                style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black)))),
-                                    TableCell(
-                                        child: Center(
-                                            child: Text("ID",
-                                                style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black)))),
-                                    TableCell(
-                                        child: Center(
-                                      child: Text("ATTENDED",
-                                          style: TextStyle(
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black)),
-                                    )),
-                                    TableCell(
-                                        child: Center(
-                                            child: Text("SESSIONS",
-                                                style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black))))
-                                  ]),
-                              // Data rows with colored backgrounds
-                              for (int i = 0; i < studentList.length; i++)
-                                TableRow(
-                                    decoration: BoxDecoration(
-                                        color: i % 2 == 0
-                                            ? Colors.grey[200]
-                                            : null),
-                                    children: [
-                                      TableCell(
-                                        child: Center(
-                                            child: Text((i + 1).toString())),
-                                      ),
-                                      TableCell(
-                                        child: Center(
-                                            child: Text(
-                                                studentList[i].student_id)),
-                                      ),
-                                      TableCell(
-                                          child: Center(
-                                              child: Text(
-                                                  studentList[i].attended_no))),
-                                      TableCell(
-                                          child: Center(
-                                              child: Text(
-                                                  studentList[i].total_no)))
-                                    ])
-                            ])))
-          ]),
-        ));
+          child: isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: Colors.green))
+              : ListView(
+                  children: [_buildTables()],
+                ),
+        ),
+      ),
+    );
   }
+}
+
+class stuList {
+  String? student_id;
+  String? total_no;
+  String? attended_no;
+  String? batch;
+  String? section;
+
+  stuList({
+    required this.student_id,
+    required this.total_no,
+    required this.attended_no,
+    required this.batch,
+    required this.section,
+  });
 }

@@ -42,8 +42,38 @@ class _SessionState extends State<Session> {
 
     _fetch_Batch_List();
     _fetch_Dept_List();
-    _fetch_section_List();
+    // _fetch_section_List();
     _fetch_student_List();
+  }
+
+  bool _areAllFieldsFilled() {
+    return sessionData.courseName != null &&
+        sessionData.roomNumber != null &&
+        sessionData.department != null &&
+        sessionData.batch != null &&
+        sessionData.section != null &&
+        sessionData.time != null;
+  }
+// String? _selectedDepartment;
+
+  List<String> _getFilteredDepartments() {
+    List<String> filteredDepartments = [];
+    for (var dept in department_list) {
+      if (!filteredDepartments.contains(dept.department_name)) {
+        filteredDepartments.add(dept.department_name);
+      }
+    }
+    return filteredDepartments;
+  }
+
+  List<String> _getUniqueBatchNumbers() {
+    List<String> uniqueBatchNumbers = [];
+    for (var batch in batch_No) {
+      if (!uniqueBatchNumbers.contains(batch.batch_number)) {
+        uniqueBatchNumbers.add(batch.batch_number);
+      }
+    }
+    return uniqueBatchNumbers;
   }
 
 //#############################################______fetchCourseList_____####################
@@ -189,6 +219,11 @@ class _SessionState extends State<Session> {
 
 //################################
   Future<void> _fetch_Dept_List() async {
+    final dept_data = await getdata();
+    const url_base = "https://besufikadyilma.tech/instructor/get-class";
+    final dep_user = dept_data.id_key;
+    String cleanedId = dep_user!.replaceAll('-', '');
+    sessionData.instructorID = cleanedId;
     final deptData = await getdata();
     const urlBase = "https://besufikadyilma.tech/instructor/get-class";
     final depUser = deptData.id_key;
@@ -249,7 +284,7 @@ class _SessionState extends State<Session> {
 
         setState(() {
           sectionList = (jsonData)
-              .map((course) => ScnLists(section: course['class']['section']))
+              .map((element) => ScnLists(section: element['class']['section']))
               .toList();
         });
       } else {
@@ -437,20 +472,31 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
+
 //##############################################################################
             DropdownButtonFormField<String>(
               value: _selectedBatch,
-              items: batch_No
+              items: _getUniqueBatchNumbers()
                   .map((batchchoice) => DropdownMenuItem<String>(
-                        value: batchchoice.batch_number,
-                        child: Text(batchchoice.batch_number),
+                        value: batchchoice,
+                        child: Text(batchchoice),
                       ))
                   .toList(),
-              onChanged: (value) {
+              onChanged: (value) async {
                 setState(() {
                   _selectedBatch = value;
                   sessionData.batch = value;
                 });
+                try {
+                  await _fetch_section_List(
+                      sessionData.instructorID,
+                      sessionData.courseID,
+                      sessionData.batch,
+                      sessionData.department);
+                } catch (error) {
+                  // Handle errors here if necessary
+                  print('Error fetching section list: $error');
+                }
               },
               decoration: const InputDecoration(
                 labelText: 'Batch Number',
@@ -465,6 +511,9 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
+
+//String? _selectedBatch;
+
             //######################################################
             DropdownButtonFormField<String>(
               value: _selectedSection,
@@ -521,9 +570,11 @@ class _SessionState extends State<Session> {
             const SizedBox(height: 30),
 //#####################################################################################
             ElevatedButton(
-              onPressed: () {
-                _showConfirmationDialog(context, sessionData.time);
-              },
+              onPressed: _areAllFieldsFilled()
+                  ? () {
+                      _showConfirmationDialog(context, sessionData.time);
+                    }
+                  : null, // Disable the button if not all fields are filled
               child: const Text(
                 'Submit',
                 style: TextStyle(

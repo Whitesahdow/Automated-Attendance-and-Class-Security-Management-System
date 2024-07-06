@@ -1,9 +1,12 @@
+// ignore_for_file: unused_import
+
 import 'package:AAMCS_App/Login_out/controllers/auth_cntrl.dart';
 import 'package:flutter/material.dart';
 import 'package:AAMCS_App/front.dart';
 // Import shared_preferences package
 
 class LogoutPage extends StatelessWidget {
+  // ignore: non_constant_identifier_names
   final String? My_Token;
   final String usertype;
   const LogoutPage(this.My_Token, this.usertype, {super.key});
