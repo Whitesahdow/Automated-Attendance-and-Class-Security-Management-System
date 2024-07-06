@@ -42,7 +42,7 @@ class _SessionState extends State<Session> {
 
     _fetch_Batch_List();
     _fetch_Dept_List();
-    _fetch_section_List();
+    // _fetch_section_List();
     _fetch_student_List();
   }
 
@@ -53,6 +53,27 @@ class _SessionState extends State<Session> {
         sessionData.batch != null &&
         sessionData.section != null &&
         sessionData.time != null;
+  }
+// String? _selectedDepartment;
+
+  List<String> _getFilteredDepartments() {
+    List<String> filteredDepartments = [];
+    for (var dept in department_list) {
+      if (!filteredDepartments.contains(dept.department_name)) {
+        filteredDepartments.add(dept.department_name);
+      }
+    }
+    return filteredDepartments;
+  }
+
+  List<String> _getUniqueBatchNumbers() {
+    List<String> uniqueBatchNumbers = [];
+    for (var batch in batch_No) {
+      if (!uniqueBatchNumbers.contains(batch.batch_number)) {
+        uniqueBatchNumbers.add(batch.batch_number);
+      }
+    }
+    return uniqueBatchNumbers;
   }
 
 //#############################################______fetchCourseList_____####################
@@ -202,6 +223,7 @@ class _SessionState extends State<Session> {
     const url_base = "https://besufikadyilma.tech/instructor/get-class";
     final dep_user = dept_data.id_key;
     String cleanedId = dep_user!.replaceAll('-', '');
+    sessionData.instructorID = cleanedId;
 
     // print("...................${user.toString()}");
     try {
@@ -235,16 +257,18 @@ class _SessionState extends State<Session> {
 
   //##############################################################################
 
-  Future<void> _fetch_section_List() async {
+  Future<void> _fetch_section_List(
+      var ins_id, var crs_id, var btch, var deprtm) async {
     final dept_data = await getdata();
-    const url_base = "https://besufikadyilma.tech/instructor/get-class";
+    var url_base =
+        "https://besufikadyilma.tech/instructor/get-class?course_id=${crs_id}&batch=$btch&department=${deprtm}";
     final dep_user = dept_data.id_key;
     String cleanedId = dep_user!.replaceAll('-', '');
 
     // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("$url_base?instructors_id=$cleanedId"),
+        Uri.parse(url_base),
         // Uri.parse(
         //     ""),
         headers: {
@@ -258,7 +282,7 @@ class _SessionState extends State<Session> {
 
         setState(() {
           sectionList = (jsonData)
-              .map((course) => ScnLists(section: course['class']['section']))
+              .map((element) => ScnLists(section: element['class']['section']))
               .toList();
         });
       } else {
@@ -421,10 +445,10 @@ class _SessionState extends State<Session> {
 //###############################################################################################
             DropdownButtonFormField<String>(
               value: _selectedDepartment,
-              items: department_list
+              items: _getFilteredDepartments()
                   .map((dept_choice) => DropdownMenuItem<String>(
-                        value: dept_choice.department_name,
-                        child: Text(dept_choice.department_name),
+                        value: dept_choice,
+                        child: Text(dept_choice),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -446,20 +470,31 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
+
 //##############################################################################
             DropdownButtonFormField<String>(
               value: _selectedBatch,
-              items: batch_No
+              items: _getUniqueBatchNumbers()
                   .map((batchchoice) => DropdownMenuItem<String>(
-                        value: batchchoice.batch_number,
-                        child: Text(batchchoice.batch_number),
+                        value: batchchoice,
+                        child: Text(batchchoice),
                       ))
                   .toList(),
-              onChanged: (value) {
+              onChanged: (value) async {
                 setState(() {
                   _selectedBatch = value;
                   sessionData.batch = value;
                 });
+                try {
+                  await _fetch_section_List(
+                      sessionData.instructorID,
+                      sessionData.courseID,
+                      sessionData.batch,
+                      sessionData.department);
+                } catch (error) {
+                  // Handle errors here if necessary
+                  print('Error fetching section list: $error');
+                }
               },
               decoration: const InputDecoration(
                 labelText: 'Batch Number',
@@ -474,6 +509,9 @@ class _SessionState extends State<Session> {
               ),
             ),
             const SizedBox(height: 30),
+
+//String? _selectedBatch;
+
             //######################################################
             DropdownButtonFormField<String>(
               value: _selectedSection,

@@ -8,6 +8,7 @@ class SessionData {
   List<String> studentIds = []; // Change to list
   String? courseID;
   String? roomID;
+  String? instructorID;
 
   SessionData({
     this.courseName,
@@ -19,6 +20,7 @@ class SessionData {
     required this.studentIds, // Update constructor parameter
     this.courseID,
     this.roomID,
+    this.instructorID,
   });
 }
 

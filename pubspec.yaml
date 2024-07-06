@@ -50,10 +50,7 @@ dependencies:
   cookie_jar: ^4.0.8
   syncfusion_flutter_calendar: ^25.2.7+1
   simple_gesture_detector: ^0.2.1
-<<<<<<< HEAD
-=======
   
->>>>>>> ab2a27aad3d16a81a727fc0281734e286c858266
   flutter_polyline_points: ^2.0.0
 
 dev_dependencies:

@@ -141,7 +141,7 @@ class _StudentPageState extends State<StudentHome> {
                       onDaySelected: _onDaySelected,
                     ),
                   ),
-                  Image.asset('Maps'),
+                  //Image.asset('Maps'),
                 ],
               ),
             );
