@@ -103,9 +103,9 @@ class _SessionState extends State<Session> {
         });
 
         course_dictionary.clear(); // Clear previous data
-        for (var course in menu_lists) {
+        menu_lists.forEach((course) {
           course_dictionary[course.course_name] = course.course_id;
-        }
+        });
       } else {
         throw Exception('Failed to load courses');
       }
@@ -183,15 +183,15 @@ class _SessionState extends State<Session> {
 
   //#############################################______ fetch Department List_____####################
   Future<void> _fetch_Batch_List() async {
-    final deptData = await getdata();
-    const urlBase = "https://besufikadyilma.tech/instructor/get-class";
-    final depUser = deptData.id_key;
-    String cleanedId = depUser!.replaceAll('-', '');
+    final dept_data = await getdata();
+    const url_base = "https://besufikadyilma.tech/instructor/get-class";
+    final dep_user = dept_data.id_key;
+    String cleanedId = dep_user!.replaceAll('-', '');
 
     // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("$urlBase?instructors_id=$cleanedId"),
+        Uri.parse("$url_base?instructors_id=$cleanedId"),
         // Uri.parse(
         //     ""),
         headers: {
@@ -224,15 +224,11 @@ class _SessionState extends State<Session> {
     final dep_user = dept_data.id_key;
     String cleanedId = dep_user!.replaceAll('-', '');
     sessionData.instructorID = cleanedId;
-    final deptData = await getdata();
-    const urlBase = "https://besufikadyilma.tech/instructor/get-class";
-    final depUser = deptData.id_key;
-    String cleanedId = depUser!.replaceAll('-', '');
 
     // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("$urlBase?instructors_id=$cleanedId"),
+        Uri.parse("$url_base?instructors_id=$cleanedId"),
         // Uri.parse(
         //     ""),
         headers: {
@@ -261,16 +257,18 @@ class _SessionState extends State<Session> {
 
   //##############################################################################
 
-  Future<void> _fetch_section_List() async {
-    final deptData = await getdata();
-    const urlBase = "https://besufikadyilma.tech/instructor/get-class";
-    final depUser = deptData.id_key;
-    String cleanedId = depUser!.replaceAll('-', '');
+  Future<void> _fetch_section_List(
+      var ins_id, var crs_id, var btch, var deprtm) async {
+    final dept_data = await getdata();
+    var url_base =
+        "https://besufikadyilma.tech/instructor/get-class?course_id=${crs_id}&batch=$btch&department=${deprtm}";
+    final dep_user = dept_data.id_key;
+    String cleanedId = dep_user!.replaceAll('-', '');
 
     // print("...................${user.toString()}");
     try {
       final response = await http.get(
-        Uri.parse("$urlBase?instructors_id=$cleanedId"),
+        Uri.parse(url_base),
         // Uri.parse(
         //     ""),
         headers: {
@@ -299,13 +297,13 @@ class _SessionState extends State<Session> {
   //########################################### Student list fetcher
   Future<void> _fetch_student_List() async {
     final data = await getdata();
-    const urlBase = "https://besufikadyilma.tech/instructor/get-class";
+    const url_base = "https://besufikadyilma.tech/instructor/get-class";
     final user = data.id_key;
     String cleanedId = user!.replaceAll('-', '');
 
     try {
       final response = await http.get(
-        Uri.parse("$urlBase?instructors_id=$cleanedId"),
+        Uri.parse("$url_base?instructors_id=$cleanedId"),
         // Uri.parse(
         //     ""),
         headers: {
@@ -447,10 +445,10 @@ class _SessionState extends State<Session> {
 //###############################################################################################
             DropdownButtonFormField<String>(
               value: _selectedDepartment,
-              items: department_list
-                  .map((deptChoice) => DropdownMenuItem<String>(
-                        value: deptChoice.department_name,
-                        child: Text(deptChoice.department_name),
+              items: _getFilteredDepartments()
+                  .map((dept_choice) => DropdownMenuItem<String>(
+                        value: dept_choice,
+                        child: Text(dept_choice),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -590,7 +588,7 @@ class _SessionState extends State<Session> {
     );
   }
 
-  void _showConfirmationDialog(BuildContext context, String? dialogueTime) {
+  void _showConfirmationDialog(BuildContext context, String? dialogue_time) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -608,7 +606,7 @@ class _SessionState extends State<Session> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Warning: Once you confirm the session, the room will be reserved for $dialogueTime minutes. Failure to unlock it within this time will result in the room becoming available again, and the session will be canceled.',
+              'Warning: Once you confirm the session, the room will be reserved for $dialogue_time minutes. Failure to unlock it within this time will result in the room becoming available again, and the session will be canceled.',
               style: const TextStyle(
                 fontFamily: 'sedan',
                 fontSize: 17,
@@ -683,7 +681,7 @@ Sessionresponse message = Sessionresponse();
 
 Future<void> createSession(
   var roomID,
-  var courseId,
+  var course_id,
   List<String> studentsList,
   var selectedTime,
   var token,
@@ -696,7 +694,7 @@ Future<void> createSession(
       Uri.parse(urlBase),
       body: jsonEncode({
         "room_id": roomID,
-        "course_id": courseId,
+        "course_id": course_id,
         "student_list": studentsList,
         "start_time": selectedTime,
         // Pass studentId here
@@ -715,11 +713,11 @@ Future<void> createSession(
     } else {
       message.message = false;
       print("Error : ${response.body}");
-      return;
+      return null;
     }
   } catch (e) {
     print("Error: $e");
-    return;
+    return null;
   }
 }
 

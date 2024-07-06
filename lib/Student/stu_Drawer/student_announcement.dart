@@ -5,16 +5,8 @@ import 'package:http/http.dart' as http;
 class Announcement extends StatefulWidget {
   final String? my_token;
 
-<<<<<<< HEAD
-  const Announcement({super.key, 
-    this.course,
-    this.instructor,
-    this.roomNumber,
-    this.start_time,
-=======
   const Announcement({
     super.key,
->>>>>>> origin/main
     required this.my_token,
   });
 
